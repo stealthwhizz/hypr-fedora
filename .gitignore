@@ -1,0 +1,11 @@
+# Matugen-generated theme colors (regenerated automatically from your wallpaper)
+hypr/hyprland/colors.lua
+hypr/hyprlock/colors.conf
+
+# Leftover .old/.new files from dots-hyprland updates
+*.old
+*.new
+
+# Editor/OS cruft
+*~
+.DS_Store
