@@ -27,7 +27,23 @@ matugen/
 ├── config.toml            # Trimmed to templates for apps actually installed (kitty, cava, swayosd, gtk, quickshell, Hyprland)
 └── templates/
     └── hyprland-colors.lua.template   # Rewritten for Lua (original targeted the old .conf format)
+
+bin/
+└── display-switch          # Windows "Win+P"-style display mode cycler (referenced by keybindings.lua)
 ```
+
+## Custom keybinds (ported over from my `ii` setup)
+
+Appended to the end of `keybindings.lua`, on top of everything from the original:
+
+| Keybind | Action |
+|---|---|
+| `Alt+Space` | Toggle search (same as `Super+D`) |
+| `Super+Tab` | Cycle to next workspace |
+| `Alt+Tab` / `Alt+Shift+Tab` | Cycle to next/previous open window |
+| `Super+Alt+P` | Cycle display mode: Extend → External only → Laptop only → Mirror (`bin/display-switch`) |
+
+None of these conflict with the original bindings — `Tab` wasn't bound to anything in the original, and `Super+Alt+P` was free (`Super+P` isn't bound here either, unlike in `ii`).
 
 ## Why this needed real porting work, not just a copy-paste
 
@@ -70,7 +86,7 @@ No automated installer for this one (yet) — it's an experimental alternate set
 
 1. Install the dependencies above.
 2. Back up your current `~/.config/hypr` and `~/.config/matugen`.
-3. Copy `hypr/` → `~/.config/hypr/`, `matugen/` → `~/.config/matugen/`.
+3. Copy `hypr/` → `~/.config/hypr/`, `matugen/` → `~/.config/matugen/`, `bin/display-switch` → `~/.local/bin/display-switch` (`chmod +x` it).
 4. `hyprctl reload`.
 
 To go back to `ii`: restore your backup, or follow [`ii/install.sh`](../ii/install.sh).

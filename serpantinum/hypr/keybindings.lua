@@ -77,3 +77,11 @@ for i = 1, 10 do
     hl.bind(mainMod .. " + " .. key,         hl.dsp.exec_cmd("~/.config/hypr/scripts/qs_manager.sh " .. i))
     hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.exec_cmd("~/.config/hypr/scripts/qs_manager.sh " .. i .. " move"))
 end
+
+-- ───────── Custom additions (ported from my ii setup) ─────────
+hl.bind("ALT + Space", hl.dsp.exec_cmd("~/.config/hypr/scripts/qs_manager.sh toggle applauncher"), { description = "Shell: Toggle search" })
+hl.bind(mainMod .. " + Tab", hl.dsp.focus({ workspace = "r+1" }), { description = "Workspace: Cycle to next screen" })
+hl.bind("ALT + Tab", hl.dsp.window.cycle_next(), { description = "Window: Cycle to next app" })
+hl.bind("ALT + SHIFT + Tab", hl.dsp.window.cycle_next({ prev = true }), { description = "Window: Cycle to previous app" })
+hl.bind(mainMod .. " + ALT + P", hl.dsp.exec_cmd("$HOME/.local/bin/display-switch"),
+    { description = "Display: Cycle mode (extend/external/internal/mirror)" })
