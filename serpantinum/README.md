@@ -32,6 +32,10 @@ bin/
 └── display-switch          # Windows "Win+P"-style display mode cycler (referenced by keybindings.lua)
 
 wallpaper/                   # ~320 images (417 MB) — drop into ~/Pictures/Wallpapers/ to use with the picker
+
+kitty/
+└── kitty.conf                # Original repo's kitty config — the `include /tmp/kitty-matugen-colors.conf`
+                               # line is what makes the terminal wallpaper-reactive too
 ```
 
 ## Custom keybinds (ported over from my `ii` setup)
@@ -55,6 +59,10 @@ None of these conflict with the original bindings — `Tab` wasn't bound to anyt
 - **`awww` → `swww`**: not actually needed here — that rename only happens inside `imperative-dots`' own `install.sh` (a `sed` pass, to dodge an Arch package name conflict). The original repo already uses plain `swww` natively.
 - **Hardcoded paths**: the only hardcoded path in the original is the author's own `/home/ilyamiro` in the schedule scraper (see below), left as-is since it's not fixable without his Firefox profile anyway.
 - **`swaync-client -rs` hung forever** in `matugen_reload.sh`, silently stalling *every single wallpaper change* — the script only checked that the `swaync-client` binary exists, not that the `swaync` notification daemon is actually running. On a system without swaync running, the client waits indefinitely for a D-Bus connection that never comes. Fixed to check `pgrep -x swaync` first, plus a `timeout 2` as a safety net regardless. Rapidly clicking through wallpapers before this fix could queue up dozens of permanently-hung processes.
+- **Whole-theme matching required app-level dotfiles we hadn't ported yet.** The original repo's `config/programs/` directory (kitty, cava, swayosd, rofi, zsh, neovim — all separate from `config/sessions/hyprland/`, which is all we'd ported) contains the actual application configs that reference the matugen-generated files. Two concrete gaps found and fixed:
+  - `~/.config/kitty/kitty.conf` was still **`ii`'s old config** — kitty config lives outside `~/.config/hypr/`, so swapping the Hyprland config never touched it. It had zero connection to this setup's matugen pipeline. Replaced with the original repo's `kitty.conf` (`kitty/kitty.conf` in this repo), which has `include /tmp/kitty-matugen-colors.conf`.
+  - `swayosd-server` (the GTK process that actually renders volume/brightness/capslock OSDs and reads the matugen-themed CSS) was never running — only `swayosd-libinput-backend` has a systemd unit; the two are separate binaries with separate roles. Added `swayosd-server` to `autostart.lua`.
+  - The Quickshell bar/popups' colors (`qs_colors.json` → `MatugenColors.qml`, self-polling every second) were structurally fine the whole time — this was never actually broken, just easy to miss when kitty (the most visible/used app) was silently stuck on someone else's stale theme.
 
 ## Known limitations
 
@@ -88,8 +96,8 @@ Plain Fedora repo: `pamixer`, `inotify-tools` (for `inotifywait`).
 No automated installer for this one (yet) — it's an experimental alternate setup, not the daily-driver config. Manually:
 
 1. Install the dependencies above.
-2. Back up your current `~/.config/hypr` and `~/.config/matugen`.
-3. Copy `hypr/` → `~/.config/hypr/`, `matugen/` → `~/.config/matugen/`, `bin/display-switch` → `~/.local/bin/display-switch` (`chmod +x` it).
+2. Back up your current `~/.config/hypr`, `~/.config/matugen`, and `~/.config/kitty`.
+3. Copy `hypr/` → `~/.config/hypr/`, `matugen/` → `~/.config/matugen/`, `kitty/kitty.conf` → `~/.config/kitty/kitty.conf`, `bin/display-switch` → `~/.local/bin/display-switch` (`chmod +x` it).
 4. `hyprctl reload`.
 
 To go back to `ii`: restore your backup, or follow [`ii/install.sh`](../ii/install.sh).
