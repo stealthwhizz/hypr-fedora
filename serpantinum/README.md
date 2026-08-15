@@ -48,6 +48,11 @@ Appended to the end of `keybindings.lua`, on top of everything from the original
 | `Super+Tab` | Cycle to next workspace |
 | `Alt+Tab` / `Alt+Shift+Tab` | Cycle to next/previous open window |
 | `Super+Alt+P` | Cycle display mode: Extend → External only → Laptop only → Mirror (`bin/display-switch`) |
+| `Super+Z` | Minimize the focused app |
+| `Super+Shift+Z` | Show/hide minimized apps |
+| `Super+Comma` | Minimize everything on the current workspace (show desktop) — `hypr/scripts/minimize_all.sh` |
+
+Hyprland has no native minimize (tiling WM — windows are only tiled/floating/fullscreen, never minimized). These fake it with a hidden special workspace, the standard Hyprland scratchpad trick. `minimize_all.sh` targets a *specific* window by address (`window = "address:0x..."` — the `address:` prefix is required, silently no-ops without it) rather than only the focused one, since the built-in dispatchers otherwise only affect whichever window has focus.
 
 None of these conflict with the original bindings — `Tab` wasn't bound to anything in the original, and `Super+Alt+P` was free (`Super+P` isn't bound here either, unlike in `ii`).
 

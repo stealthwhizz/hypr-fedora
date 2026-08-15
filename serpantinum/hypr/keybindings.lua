@@ -82,3 +82,11 @@ hl.bind("ALT + Tab", hl.dsp.window.cycle_next(), { description = "Window: Cycle 
 hl.bind("ALT + SHIFT + Tab", hl.dsp.window.cycle_next({ prev = true }), { description = "Window: Cycle to previous app" })
 hl.bind(mainMod .. " + ALT + P", hl.dsp.exec_cmd("$HOME/.local/bin/display-switch"),
     { description = "Display: Cycle mode (extend/external/internal/mirror)" })
+
+-- ───────── Minimize (Hyprland has no native minimize; uses a hidden special workspace) ─────────
+hl.bind(mainMod .. " + Z", hl.dsp.window.move({ workspace = "special:minimized", follow = false }),
+    { description = "Window: Minimize focused app" })
+hl.bind(mainMod .. " + SHIFT + Z", hl.dsp.workspace.toggle_special("minimized"),
+    { description = "Window: Show/hide minimized apps" })
+hl.bind(mainMod .. " + COMMA", hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/minimize_all.sh"),
+    { description = "Window: Minimize everything (show desktop)" })
