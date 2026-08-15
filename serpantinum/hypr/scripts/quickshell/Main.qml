@@ -128,6 +128,13 @@ PanelWindow {
     Component.onCompleted: {
         Qt.callLater(() => preloadWidget("settings"));
         preloadStaggerTimer.start();
+
+        // currentActive's default value ("hidden") never fires onCurrentActiveChanged,
+        // so current_widget on disk can go stale after a reload that happens mid-close
+        // (e.g. a config edit triggering Quickshell.reload(true) while a widget was still
+        // open) — TopBar reads that file, not this live property, so it'd stay stuck
+        // thinking a widget is open forever. Force a write on every fresh load to resync.
+        Quickshell.execDetached(["bash", "-c", "echo '" + currentActive + "' > " + paths.runDir + "/current_widget"]);
     }
 
     Timer {
