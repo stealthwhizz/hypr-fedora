@@ -9,29 +9,11 @@ source "$(dirname "${BASH_SOURCE[0]}")/caching.sh"
 qs_ensure_cache "screenshot"
 qs_ensure_cache "recording"
 
-# ---------------------------------------------------------
-# DEPENDENCY CHECK
-# ---------------------------------------------------------
 # First check for notify-send so we can display errors
 if ! command -v notify-send &> /dev/null; then
     echo "ERROR: notify-send is not installed. Cannot display missing dependencies."
     exit 1
 fi
-
-REQUIRED_CMDS=("gpu-screen-recorder" "grim" "satty" "wl-copy" "pactl" "quickshell" "zbarimg" "python3")
-MISSING_CMDS=()
-
-for cmd in "${REQUIRED_CMDS[@]}"; do
-    if ! command -v "$cmd" &> /dev/null; then
-        MISSING_CMDS+=("$cmd")
-    fi
-done
-
-if [ ${#MISSING_CMDS[@]} -ne 0 ]; then
-    notify-send -u critical -a "Screenshot System" "Missing Dependencies" "Cannot start. Please install:\n${MISSING_CMDS[*]}"
-    exit 1
-fi
-# ---------------------------------------------------------
 
 # Directories
 SAVE_DIR="${XDG_PICTURES_DIR:-$HOME/Pictures}/Screenshots"
@@ -66,6 +48,27 @@ while [[ "$#" -gt 0 ]]; do
         *) shift ;;
     esac
 done
+
+# ---------------------------------------------------------
+# DEPENDENCY CHECK
+# ---------------------------------------------------------
+# gpu-screen-recorder is only needed for --record; screenshots shouldn't be
+# blocked by a recording-only dependency they don't actually use.
+REQUIRED_CMDS=("grim" "satty" "wl-copy" "pactl" "quickshell" "zbarimg" "python3")
+[ "$RECORD_MODE" = true ] && REQUIRED_CMDS+=("gpu-screen-recorder")
+MISSING_CMDS=()
+
+for cmd in "${REQUIRED_CMDS[@]}"; do
+    if ! command -v "$cmd" &> /dev/null; then
+        MISSING_CMDS+=("$cmd")
+    fi
+done
+
+if [ ${#MISSING_CMDS[@]} -ne 0 ]; then
+    notify-send -u critical -a "Screenshot System" "Missing Dependencies" "Cannot start. Please install:\n${MISSING_CMDS[*]}"
+    exit 1
+fi
+# ---------------------------------------------------------
 
 # ---------------------------------------------------------
 # INSTANT QR SCANNING EXECUTION
