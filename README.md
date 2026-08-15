@@ -44,6 +44,8 @@ hypr/
 
 bin/
 └── display-switch          # Windows "Win+P"-style display mode cycler (referenced by custom/keybinds.lua)
+
+install.sh                   # Backs up your current config, then installs everything above
 ```
 
 ## Custom keybinds (`custom/keybinds.lua`)
@@ -67,6 +69,10 @@ bin/
 ## Install
 
 1. Install [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) first (`main` branch, for the Lua config support) — this provides Quickshell, the `ii` shell, and the base `hyprland/` files this config layers on top of.
-2. Copy `hypr/custom/*` and `hypr/hypridle.conf`/`hypr/hyprlock.conf`/`hypr/hyprlock/*` into your `~/.config/hypr/`.
-3. Copy `bin/display-switch` to `~/.local/bin/` and `chmod +x` it.
-4. `hyprctl reload`.
+2. Clone this repo and run the installer:
+   ```
+   git clone https://github.com/stealthwhizz/hypr-fedora.git
+   cd hypr-fedora
+   ./install.sh
+   ```
+   It backs up your existing `custom/`, `hypridle.conf`, `hyprlock.conf`, and `hyprlock/` before overwriting anything, copies everything into place, installs `bin/display-switch` to `~/.local/bin/`, and reloads Hyprland if it's currently running.
