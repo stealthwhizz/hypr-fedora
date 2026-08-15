@@ -16,9 +16,12 @@ if pgrep -x "cava" > /dev/null; then
     killall -USR1 cava
 fi
 
-# Reload SwayNC CSS styling dynamically without killing the daemon
-if command -v swaync-client &> /dev/null; then
-    swaync-client -rs
+# Reload SwayNC CSS styling dynamically without killing the daemon.
+# Check the daemon is actually running (not just that the client binary exists) —
+# swaync-client hangs indefinitely ("Will wait for connection...") if the daemon
+# isn't up, which silently stalled every wallpaper change forever.
+if pgrep -x swaync > /dev/null; then
+    timeout 2 swaync-client -rs
 fi
 
 # Restarting swayosd.service is currently the ONLY way to reload its CSS.

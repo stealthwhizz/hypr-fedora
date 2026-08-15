@@ -30,6 +30,8 @@ matugen/
 
 bin/
 └── display-switch          # Windows "Win+P"-style display mode cycler (referenced by keybindings.lua)
+
+wallpaper/                   # ~320 images (417 MB) — drop into ~/Pictures/Wallpapers/ to use with the picker
 ```
 
 ## Custom keybinds (ported over from my `ii` setup)
@@ -52,6 +54,7 @@ None of these conflict with the original bindings — `Tab` wasn't bound to anyt
 - **Matugen → Hyprland colors**: the original template generated a `.conf` file sourced live by hyprlang. Lua config isn't hot-sourced, so this needed: (1) rewriting the template to emit a Lua table instead of `$var = ...` lines, targeting `colors.lua` instead of `colors.conf`, and (2) adding an explicit `hyprctl reload` to `matugen_reload.sh` so the new colors actually take effect after a wallpaper change.
 - **`awww` → `swww`**: not actually needed here — that rename only happens inside `imperative-dots`' own `install.sh` (a `sed` pass, to dodge an Arch package name conflict). The original repo already uses plain `swww` natively.
 - **Hardcoded paths**: the only hardcoded path in the original is the author's own `/home/ilyamiro` in the schedule scraper (see below), left as-is since it's not fixable without his Firefox profile anyway.
+- **`swaync-client -rs` hung forever** in `matugen_reload.sh`, silently stalling *every single wallpaper change* — the script only checked that the `swaync-client` binary exists, not that the `swaync` notification daemon is actually running. On a system without swaync running, the client waits indefinitely for a D-Bus connection that never comes. Fixed to check `pgrep -x swaync` first, plus a `timeout 2` as a safety net regardless. Rapidly clicking through wallpapers before this fix could queue up dozens of permanently-hung processes.
 
 ## Known limitations
 
