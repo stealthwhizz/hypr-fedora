@@ -1,28 +1,35 @@
 #!/usr/bin/env bash
-# install.sh — apply this config on top of an existing end-4/dots-hyprland (ii) setup.
+# install.sh — full setup: installs end-4/dots-hyprland (ii) as the base if it's
+# not already present, then layers my custom/ overrides, lock screen config, and
+# companion script on top. Just clone this repo and run this script — nothing
+# else to install separately first.
 #
-# This does NOT install Hyprland, Quickshell, or the ii shell itself — it only
-# layers my custom/ overrides, lock screen config, and companion script on top.
-# See README.md for the full prerequisite (end-4/dots-hyprland) install steps.
+# The base install (end-4's ./setup install) needs sudo and asks interactive
+# questions, so run this in a real terminal, not piped/non-interactively.
 
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HYPR_DIR="$HOME/.config/hypr"
 BIN_DIR="$HOME/.local/bin"
+DOTS_HYPRLAND_DIR="$HOME/dots-hyprland"
 BACKUP_DIR="$HOME/hypr-fedora-preinstall-backup-$(date +%Y%m%d-%H%M%S)"
 
-echo "==> Checking prerequisites"
+echo "==> Checking for base install (end-4/dots-hyprland)"
 
 if [ ! -d "$HYPR_DIR/hyprland" ]; then
-    echo "ERROR: $HYPR_DIR/hyprland not found."
-    echo "This config layers on top of end-4/dots-hyprland (ii) — install that first:"
-    echo "  https://github.com/end-4/dots-hyprland"
-    exit 1
+    echo "Base not found — installing end-4/dots-hyprland first."
+    echo "This needs sudo and will ask you questions interactively."
+    if [ ! -d "$DOTS_HYPRLAND_DIR" ]; then
+        git clone https://github.com/end-4/dots-hyprland.git "$DOTS_HYPRLAND_DIR"
+    fi
+    (cd "$DOTS_HYPRLAND_DIR" && git checkout main && ./setup install)
+else
+    echo "Base already present at $HYPR_DIR/hyprland — skipping."
 fi
 
 if ! command -v hyprctl >/dev/null 2>&1; then
-    echo "ERROR: hyprctl not found. Is Hyprland installed?"
+    echo "ERROR: hyprctl still not found after base install. Something went wrong above."
     exit 1
 fi
 

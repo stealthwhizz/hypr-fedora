@@ -68,11 +68,14 @@ install.sh                   # Backs up your current config, then installs every
 
 ## Install
 
-1. Install [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) first (`main` branch, for the Lua config support) — this provides Quickshell, the `ii` shell, and the base `hyprland/` files this config layers on top of.
-2. Clone this repo and run the installer:
-   ```
-   git clone https://github.com/stealthwhizz/hypr-fedora.git
-   cd hypr-fedora
-   ./install.sh
-   ```
-   It backs up your existing `custom/`, `hypridle.conf`, `hyprlock.conf`, and `hyprlock/` before overwriting anything, copies everything into place, installs `bin/display-switch` to `~/.local/bin/`, and reloads Hyprland if it's currently running.
+```
+git clone https://github.com/stealthwhizz/hypr-fedora.git
+cd hypr-fedora
+./install.sh
+```
+
+Run this in a real terminal, not piped — it's interactive and needs `sudo`.
+
+If [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) (the `ii` shell base — Quickshell, the `hyprland/` files this config layers on top of, etc.) isn't already installed, the script clones it to `~/dots-hyprland` and runs its `main`-branch installer for you first. If it's already present, that step is skipped automatically.
+
+Either way, it then backs up your existing `custom/`, `hypridle.conf`, `hyprlock.conf`, and `hyprlock/` before overwriting anything, copies everything from this repo into place, installs `bin/display-switch` to `~/.local/bin/`, and reloads Hyprland if it's currently running.
