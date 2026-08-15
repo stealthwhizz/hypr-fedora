@@ -38,9 +38,71 @@ kitty/
                                # line is what makes the terminal wallpaper-reactive too
 ```
 
-## Custom keybinds (ported over from my `ii` setup)
+## All keybinds
 
-Appended to the end of `keybindings.lua`, on top of everything from the original:
+Full reference, `keybindings.lua` — everything from the original repo plus the custom additions below.
+
+**Window management**
+
+| Keybind | Action |
+|---|---|
+| `Super+Shift+←/→/↑/↓` | Resize focused window |
+| `Super+Ctrl+←/→/↑/↓` | Swap focused window in that direction |
+| `Super+←/→/↑/↓` | Move focus in that direction |
+| `Alt+F4` | Close focused window |
+
+**System & hardware**
+
+| Keybind | Action |
+|---|---|
+| `Caps_Lock` | Caps-lock OSD (swayosd) |
+| `XF86MonBrightnessDown/Up` | Brightness OSD |
+| `Print` | Screenshot: region select overlay |
+| `Shift+Print` | Screenshot: region select, then edit in satty |
+| `Super+Print` | Screenshot: instant full screen |
+| `Super+Shift+Print` | Screenshot: instant full screen, then edit in satty |
+| `XF86PowerOff` | Lock screen |
+| `Super+L` | Lock screen |
+
+**Media & audio**
+
+| Keybind | Action |
+|---|---|
+| `Super+Space` / `XF86AudioPlay` / `XF86AudioPause` | Play/pause |
+| `XF86AudioMicMute` | Mute mic |
+| `XF86AudioMute` | Mute output |
+| `XF86AudioLowerVolume` / `XF86AudioRaiseVolume` | Volume down/up |
+
+**Applications & launchers**
+
+| Keybind | Action |
+|---|---|
+| `Super+F` | Firefox |
+| `Super+E` | Nautilus (file manager) |
+| `Super+T` | Telegram |
+| `Super+O` | Obsidian |
+| `Super+Return` | Terminal |
+
+**Quickshell panels** (all `Super+<key>`, toggle open/close)
+
+| Keybind | Panel | Keybind | Panel |
+|---|---|---|---|
+| `M` | Monitors | `S` | Calendar |
+| `R` | Reload shell | `N` | Network |
+| `D` | Applauncher/search | `Shift+T` | Focustime |
+| `C` | Clipboard | `V` | Volume |
+| `Shift+S` | Settings | `H` | Guide |
+| `Q` | Music | `B` | Battery/power |
+| `W` | Wallpaper picker | | |
+
+**Workspaces**
+
+| Keybind | Action |
+|---|---|
+| `Super+1..9,0` | Switch to workspace 1–10 |
+| `Super+Shift+1..9,0` | Move focused window to workspace 1–10 |
+
+**Custom additions** (ported over from my `ii` setup, appended to the end of `keybindings.lua`)
 
 | Keybind | Action |
 |---|---|
