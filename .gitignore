@@ -3,6 +3,9 @@ ii/hypr/hyprland/colors.lua
 ii/hypr/hyprlock/colors.conf
 serpantinum/hypr/colors.lua
 
+# Secrets (API keys)
+serpantinum/hypr/scripts/quickshell/calendar/.env
+
 # Editor/OS cruft
 *~
 .DS_Store

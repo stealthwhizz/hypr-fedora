@@ -15,6 +15,7 @@ json_file="${cache_dir}/weather.json"
 view_file="${cache_dir}/view_id"
 daily_cache_file="${cache_dir}/daily_weather_cache.json"
 next_day_cache_file="${cache_dir}/next_day_precache.json"
+location_cache_file="${cache_dir}/location.json"
 ENV_FILE="$(dirname "$0")/.env"
 
 # API Settings
@@ -25,8 +26,34 @@ fi
 
 # API Settings from .env
 KEY="$OPENWEATHER_KEY"
-ID="$OPENWEATHER_CITY_ID"
 UNIT="${OPENWEATHER_UNIT:-metric}" # Default to metric if not set
+
+# -----------------------------------------------------------------------------
+# AUTO LOCATION (IP-based geolocation, no key needed — cached 24h since a
+# desktop's location rarely changes; refetched automatically once stale)
+# -----------------------------------------------------------------------------
+get_location() {
+    if [ -f "$location_cache_file" ]; then
+        loc_age=$(( $(date +%s) - $(stat -c %Y "$location_cache_file") ))
+        if [ "$loc_age" -lt 86400 ]; then
+            LAT=$(jq -r '.lat // empty' "$location_cache_file")
+            LON=$(jq -r '.lon // empty' "$location_cache_file")
+            [ -n "$LAT" ] && [ -n "$LON" ] && return
+        fi
+    fi
+
+    loc_raw=$(curl -sf "https://ipinfo.io/json")
+    loc_pair=$(echo "$loc_raw" | jq -r '.loc // empty')
+    if [ -n "$loc_pair" ]; then
+        LAT="${loc_pair%,*}"
+        LON="${loc_pair#*,}"
+        jq -n --arg lat "$LAT" --arg lon "$LON" '{lat: $lat, lon: $lon}' > "$location_cache_file"
+    elif [ -f "$location_cache_file" ]; then
+        # Fetch failed (offline, rate-limited) — fall back to last known location
+        LAT=$(jq -r '.lat // empty' "$location_cache_file")
+        LON=$(jq -r '.lon // empty' "$location_cache_file")
+    fi
+}
 
 # Determine temperature symbol based on unit
 case "$UNIT" in
@@ -105,10 +132,18 @@ get_data() {
     # ---------------------------------------------------------
     # STANDARD API FETCH LOGIC
     # ---------------------------------------------------------
-    forecast_url="http://api.openweathermap.org/data/2.5/forecast?APPID=${KEY}&id=${ID}&units=${UNIT}"
+    get_location
+    if [ -z "$LAT" ] || [ -z "$LON" ]; then
+        if [ ! -f "$json_file" ]; then
+            write_dummy_data
+        fi
+        return
+    fi
+
+    forecast_url="http://api.openweathermap.org/data/2.5/forecast?APPID=${KEY}&lat=${LAT}&lon=${LON}&units=${UNIT}"
     raw_api=$(curl -sf "$forecast_url")
-    
-    weather_url="http://api.openweathermap.org/data/2.5/weather?APPID=${KEY}&id=${ID}&units=${UNIT}"
+
+    weather_url="http://api.openweathermap.org/data/2.5/weather?APPID=${KEY}&lat=${LAT}&lon=${LON}&units=${UNIT}"
     raw_weather=$(curl -sf "$weather_url")
     
     # Check if curl failed OR if OpenWeather returned an error
