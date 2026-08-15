@@ -1,0 +1,548 @@
+{
+    "uiScale": 1,
+    "openGuideAtStartup": true,
+    "topbarHelpIcon": true,
+    "wallpaperDir": "/home/stealthwhiz/Pictures/Wallpapers",
+    "language": "",
+    "kbOptions": "grp:alt_shift_toggle",
+    "workspaceCount": 9,
+    "keybinds": [
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "left",
+            "dispatcher": "resizeactive",
+            "command": "-50 0"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "right",
+            "dispatcher": "resizeactive",
+            "command": "50 0"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "up",
+            "dispatcher": "resizeactive",
+            "command": "0 -50"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "down",
+            "dispatcher": "resizeactive",
+            "command": "0 50"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER CTRL",
+            "key": "left",
+            "dispatcher": "movewindow",
+            "command": "l"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER CTRL",
+            "key": "right",
+            "dispatcher": "movewindow",
+            "command": "r"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER CTRL",
+            "key": "up",
+            "dispatcher": "movewindow",
+            "command": "u"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER CTRL",
+            "key": "down",
+            "dispatcher": "movewindow",
+            "command": "d"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "left",
+            "dispatcher": "movefocus",
+            "command": "l"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "right",
+            "dispatcher": "movefocus",
+            "command": "r"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "up",
+            "dispatcher": "movefocus",
+            "command": "u"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "down",
+            "dispatcher": "movefocus",
+            "command": "d"
+        },
+        {
+            "type": "bind",
+            "mods": "ALT",
+            "key": "F4",
+            "dispatcher": "killactive",
+            "command": ""
+        },
+        {
+            "type": "bind",
+            "mods": "",
+            "key": "Caps_Lock",
+            "dispatcher": "exec",
+            "command": "sleep 0.1 && swayosd-client --caps-lock"
+        },
+        {
+            "type": "bind",
+            "mods": "",
+            "key": "XF86MonBrightnessDown",
+            "dispatcher": "exec",
+            "command": "swayosd-client --brightness lower"
+        },
+        {
+            "type": "bind",
+            "mods": "",
+            "key": "XF86MonBrightnessUp",
+            "dispatcher": "exec",
+            "command": "swayosd-client --brightness raise"
+        },
+        {
+            "type": "bind",
+            "mods": "",
+            "key": "Print",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/screenshot.sh"
+        },
+        {
+            "type": "bind",
+            "mods": "SHIFT",
+            "key": "Print",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/screenshot.sh --edit"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "Print",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/screenshot.sh --full"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "Print",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/screenshot.sh --full --edit"
+        },
+        {
+            "type": "bind",
+            "mods": "",
+            "key": "XF86PowerOff",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/lock.sh"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "L",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/lock.sh"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "SPACE",
+            "dispatcher": "exec",
+            "command": "playerctl play-pause"
+        },
+        {
+            "type": "bind",
+            "mods": "",
+            "key": "XF86AudioPause",
+            "dispatcher": "exec",
+            "command": "playerctl play-pause"
+        },
+        {
+            "type": "bind",
+            "mods": "",
+            "key": "XF86AudioPlay",
+            "dispatcher": "exec",
+            "command": "playerctl play-pause"
+        },
+        {
+            "type": "bind",
+            "mods": "",
+            "key": "XF86AudioMicMute",
+            "dispatcher": "exec",
+            "command": "swayosd-client --input-volume mute-toggle"
+        },
+        {
+            "type": "bind",
+            "mods": "",
+            "key": "XF86AudioMute",
+            "dispatcher": "exec",
+            "command": "swayosd-client --output-volume mute-toggle"
+        },
+        {
+            "type": "bind",
+            "mods": "",
+            "key": "XF86AudioLowerVolume",
+            "dispatcher": "exec",
+            "command": "swayosd-client --output-volume lower"
+        },
+        {
+            "type": "bind",
+            "mods": "",
+            "key": "XF86AudioRaiseVolume",
+            "dispatcher": "exec",
+            "command": "swayosd-client --output-volume raise"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "F",
+            "dispatcher": "exec",
+            "command": "firefox"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "E",
+            "dispatcher": "exec",
+            "command": "nautilus"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "T",
+            "dispatcher": "exec",
+            "command": "Telegram"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "O",
+            "dispatcher": "exec",
+            "command": "obsidian"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "RETURN",
+            "dispatcher": "exec",
+            "command": "kitty"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "M",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle monitors"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "R",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/reload.sh"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "D",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle applauncher"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "C",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle clipboard"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "Q",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle music"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "B",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle battery"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "W",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle wallpaper"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "S",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle calendar"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "N",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle network"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "V",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle volume"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "H",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle guide"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "S",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle settings"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "T",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle focustime"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "1",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 1"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "1",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 1 move"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "2",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 2"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "2",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 2 move"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "3",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 3"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "3",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 3 move"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "4",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 4"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "4",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 4 move"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "5",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 5"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "5",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 5 move"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "6",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 6"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "6",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 6 move"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "7",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 7"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "7",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 7 move"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "8",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 8"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "8",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 8 move"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "9",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 9"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "9",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 9 move"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "0",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 10"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "0",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh 10 move"
+        },
+        {
+            "type": "bind",
+            "mods": "ALT",
+            "key": "Space",
+            "dispatcher": "exec",
+            "command": "~/.config/hypr/scripts/qs_manager.sh toggle applauncher"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "Tab",
+            "dispatcher": "workspace",
+            "command": "r+1"
+        },
+        {
+            "type": "bind",
+            "mods": "ALT",
+            "key": "Tab",
+            "dispatcher": "cyclenext",
+            "command": ""
+        },
+        {
+            "type": "bind",
+            "mods": "ALT SHIFT",
+            "key": "Tab",
+            "dispatcher": "cyclenext",
+            "command": "prev"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER ALT",
+            "key": "P",
+            "dispatcher": "exec",
+            "command": "$HOME/.local/bin/display-switch"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "Z",
+            "dispatcher": "movetoworkspacesilent",
+            "command": "special:minimized"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "Z",
+            "dispatcher": "togglespecialworkspace",
+            "command": "minimized"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "comma",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/minimize_all.sh"
+        }
+    ],
+    "monitors": [
+        {
+            "name": "eDP-1",
+            "resW": 1920,
+            "resH": 1080,
+            "rate": 165,
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "transform": 0
+        }
+    ]
+}
