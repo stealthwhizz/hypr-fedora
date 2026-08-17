@@ -82,7 +82,7 @@ Full reference, `keybindings.lua` — everything from the original repo plus the
 | `Super+Alt+T` | Telegram (moved off `Super+T` — see terminal below) |
 | `Super+O` | Obsidian |
 | `Super+D` | Discord (Flatpak — `flatpak run com.discordapp.Discord`) |
-| `Super+Return` / `Super+T` | Terminal (kitty) |
+| `Super+T` | Terminal (kitty) |
 | `Ctrl+Alt+T` | Terminal (`ptyxis` — Fedora's default GNOME terminal, deliberately a *different* terminal app than `Super+T`, not a duplicate of it) |
 
 **Quickshell panels** (all `Super+<key>`, toggle open/close)
