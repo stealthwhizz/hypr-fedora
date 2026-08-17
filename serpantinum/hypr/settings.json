@@ -93,13 +93,6 @@
         },
         {
             "type": "bind",
-            "mods": "ALT",
-            "key": "F4",
-            "dispatcher": "killactive",
-            "command": ""
-        },
-        {
-            "type": "bind",
             "mods": "",
             "key": "Caps_Lock",
             "dispatcher": "exec",
@@ -226,7 +219,7 @@
         },
         {
             "type": "bind",
-            "mods": "SUPER",
+            "mods": "SUPER ALT",
             "key": "T",
             "dispatcher": "exec",
             "command": "Telegram"
@@ -241,13 +234,34 @@
         {
             "type": "bind",
             "mods": "SUPER",
-            "key": "RETURN",
+            "key": "T",
             "dispatcher": "exec",
             "command": "kitty"
         },
         {
             "type": "bind",
+            "mods": "CTRL ALT",
+            "key": "T",
+            "dispatcher": "exec",
+            "command": "ptyxis"
+        },
+        {
+            "type": "bind",
             "mods": "SUPER",
+            "key": "D",
+            "dispatcher": "exec",
+            "command": "flatpak run com.discordapp.Discord"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "M",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle music"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER ALT",
             "key": "M",
             "dispatcher": "exec",
             "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle monitors"
@@ -255,30 +269,9 @@
         {
             "type": "bind",
             "mods": "SUPER",
-            "key": "R",
-            "dispatcher": "exec",
-            "command": "bash ~/.config/hypr/scripts/reload.sh"
-        },
-        {
-            "type": "bind",
-            "mods": "SUPER",
-            "key": "D",
-            "dispatcher": "exec",
-            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle applauncher"
-        },
-        {
-            "type": "bind",
-            "mods": "SUPER",
             "key": "C",
             "dispatcher": "exec",
             "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle clipboard"
-        },
-        {
-            "type": "bind",
-            "mods": "SUPER",
-            "key": "Q",
-            "dispatcher": "exec",
-            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle music"
         },
         {
             "type": "bind",
@@ -324,10 +317,24 @@
         },
         {
             "type": "bind",
+            "mods": "SUPER",
+            "key": "R",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/reload.sh"
+        },
+        {
+            "type": "bind",
             "mods": "SUPER SHIFT",
             "key": "S",
             "dispatcher": "exec",
             "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle settings"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER",
+            "key": "Q",
+            "dispatcher": "killactive",
+            "command": ""
         },
         {
             "type": "bind",
@@ -540,6 +547,16 @@
             "resH": 1080,
             "rate": 165,
             "x": 0,
+            "y": 0,
+            "scale": 1,
+            "transform": 0
+        },
+        {
+            "name": "HDMI-A-1",
+            "resW": 1920,
+            "resH": 1080,
+            "rate": 100,
+            "x": 1920,
             "y": 0,
             "scale": 1,
             "transform": 0
