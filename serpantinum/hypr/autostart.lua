@@ -1,4 +1,11 @@
 hl.on("hyprland.start", function()
+    -- PAM (pam_gnome_keyring, gdm-password) unlocks a keyring at actual login,
+    -- but Hyprland's own process never inherits that daemon's env vars, so any
+    -- app requesting secrets later via D-Bus can't find it — a second, unrelated
+    -- keyring daemon spawns blind instead, with no known password, forcing an
+    -- unnecessary unlock prompt (and this build crashes shortly after handling
+    -- it). Run first, before anything that might touch secrets/SSH keys.
+    hl.exec_cmd("bash ~/.config/hypr/scripts/keyring_init.sh")
     hl.exec_cmd("swww-daemon")
     hl.exec_cmd("hypridle")
     hl.exec_cmd("playerctld")
