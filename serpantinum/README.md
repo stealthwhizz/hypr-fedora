@@ -111,6 +111,7 @@ Full reference, `keybindings.lua` — everything from the original repo plus the
 |---|---|
 | `Alt+Space` | Toggle search (the only key for this now — `Super+D` was dropped, see above) |
 | `Super+Tab` | Cycle to next workspace |
+| `Super+Shift+Tab` | Back to previous workspace — a true toggle (Hyprland's `workspace = "previous"` target), not "go down one number". Verified live: flips back and forth between the last two active workspaces. |
 | `Alt+Tab` / `Alt+Shift+Tab` | Cycle to next/previous open window |
 | `Super+Alt+P` | Cycle display mode: Extend → External only → Laptop only → Mirror (`bin/display-switch`) |
 | `Super+Z` | Minimize the focused app |
