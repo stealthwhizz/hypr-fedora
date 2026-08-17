@@ -12,6 +12,11 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("systemctl --user enable --now easyeffects")
+    -- No polkit authentication agent was running at all - the cause of
+    -- "Cannot request authentication... PolicyKit authentication system
+    -- appears to be not available" errors (e.g. mounting the Windows
+    -- partition via udisks2, which is polkit-gated).
+    hl.exec_cmd("systemctl --user enable --now hyprpolkitagent")
     -- swayosd-server (the OSD popup renderer) has no autostart mechanism of its
     -- own on this system — only swayosd-libinput-backend is a system service.
     -- Without this, volume/brightness/capslock OSDs never appear, and its
@@ -23,7 +28,10 @@ hl.on("hyprland.start", function()
     -- otherwise — without this, every future external-monitor connection
     -- shows a blank screen until manually fixed. See serpantinum README.
     hl.exec_cmd("bash ~/.config/hypr/scripts/monitor_watcher.sh &")
-    hl.exec_cmd("gsettings set org.gnome.desktop.interface cursor-theme 'ArcMidnight-Cursors'")
+    -- ArcMidnight-Cursors isn't installed anywhere on this system - was causing
+    -- every GTK app to silently fail theme lookup and fall back inconsistently
+    -- (see env.lua for the matching Hyprland-native cursor fix).
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Classic'")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface cursor-size 24")
     hl.exec_cmd("quickshell -p ~/.config/hypr/scripts/quickshell/Shell.qml")
     hl.exec_cmd("python3 ~/.config/hypr/scripts/quickshell/focustime/focus_daemon.py &")
