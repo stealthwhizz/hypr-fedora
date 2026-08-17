@@ -12,6 +12,10 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("swayosd-server")
     hl.exec_cmd("~/.config/hypr/scripts/settings_watcher.sh &")
     hl.exec_cmd("~/.config/hypr/scripts/volume_listener.sh")
+    -- swww defaults a newly-connected monitor to solid black until told
+    -- otherwise — without this, every future external-monitor connection
+    -- shows a blank screen until manually fixed. See serpantinum README.
+    hl.exec_cmd("bash ~/.config/hypr/scripts/monitor_watcher.sh &")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface cursor-theme 'ArcMidnight-Cursors'")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface cursor-size 24")
     hl.exec_cmd("quickshell -p ~/.config/hypr/scripts/quickshell/Shell.qml")
