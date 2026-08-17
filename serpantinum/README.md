@@ -49,7 +49,7 @@ Full reference, `keybindings.lua` — everything from the original repo plus the
 | `Super+Shift+←/→/↑/↓` | Resize focused window |
 | `Super+Ctrl+←/→/↑/↓` | Swap focused window in that direction |
 | `Super+←/→/↑/↓` | Move focus in that direction |
-| `Alt+F4` | Close focused window |
+| `Super+Q` | Close focused window (matches `ii`; moved off `Alt+F4`, which is now unbound) |
 
 **System & hardware**
 
@@ -79,21 +79,22 @@ Full reference, `keybindings.lua` — everything from the original repo plus the
 |---|---|
 | `Super+F` | Firefox |
 | `Super+E` | Nautilus (file manager) |
-| `Super+T` | Telegram |
+| `Super+Alt+T` | Telegram (moved off `Super+T` — see terminal below) |
 | `Super+O` | Obsidian |
-| `Super+Return` | Terminal |
+| `Super+Return` / `Super+T` / `Ctrl+Alt+T` | Terminal — three keys on purpose, matching `ii`'s own redundant terminal binds |
 
 **Quickshell panels** (all `Super+<key>`, toggle open/close)
 
 | Keybind | Panel | Keybind | Panel |
 |---|---|---|---|
-| `M` | Monitors | `S` | Calendar |
-| `R` | Reload shell | `N` | Network |
-| `D` | Applauncher/search | `Shift+T` | Focustime |
+| `M` | Music (matches `ii`) | `S` | Calendar |
+| `Alt+M` | Monitors (moved off `Super+M` to make room for music) | `N` | Network |
+| `R` | Reload shell | `Shift+T` | Focustime |
 | `C` | Clipboard | `V` | Volume |
 | `Shift+S` | Settings | `H` | Guide |
-| `Q` | Music | `B` | Battery/power |
-| `W` | Wallpaper picker | | |
+| `B` | Battery/power | `W` | Wallpaper picker |
+
+`Super+D` is now unbound — it used to duplicate `Alt+Space` for search; dropped per request to keep only one key per action.
 
 **Workspaces**
 
@@ -106,7 +107,7 @@ Full reference, `keybindings.lua` — everything from the original repo plus the
 
 | Keybind | Action |
 |---|---|
-| `Alt+Space` | Toggle search (same as `Super+D`) |
+| `Alt+Space` | Toggle search (the only key for this now — `Super+D` was dropped, see above) |
 | `Super+Tab` | Cycle to next workspace |
 | `Alt+Tab` / `Alt+Shift+Tab` | Cycle to next/previous open window |
 | `Super+Alt+P` | Cycle display mode: Extend → External only → Laptop only → Mirror (`bin/display-switch`) |

@@ -21,8 +21,6 @@ hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
 hl.bind(mainMod .. " + up",    hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "down" }))
 
-hl.bind("ALT + F4", hl.dsp.window.close())
-
 -- ───────── System & Hardware ─────────
 hl.bind("Caps_Lock", hl.dsp.exec_cmd("sleep 0.1 && swayosd-client --caps-lock"), { locked = true })
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("swayosd-client --brightness lower"), { locked = true })
@@ -49,17 +47,19 @@ hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("swayosd-client --output-volume 
 -- ───────── Applications & Launchers ─────────
 hl.bind(mainMod .. " + F",      hl.dsp.exec_cmd("firefox"))
 hl.bind(mainMod .. " + E",      hl.dsp.exec_cmd("nautilus"))
-hl.bind(mainMod .. " + T",      hl.dsp.exec_cmd("Telegram"))
+hl.bind(mainMod .. " + ALT + T", hl.dsp.exec_cmd("Telegram"))
 hl.bind(mainMod .. " + O",      hl.dsp.exec_cmd("obsidian"))
 hl.bind(mainMod .. " + RETURN", hl.dsp.exec_cmd(terminal))
+hl.bind(mainMod .. " + T",      hl.dsp.exec_cmd(terminal), { description = "App: Terminal (matches ii)" })
+hl.bind("CTRL + ALT + T",       hl.dsp.exec_cmd(terminal), { description = "App: Terminal (matches ii)" })
 
 -- ───────── Quickshell Controls ─────────
-hl.bind(mainMod .. " + M",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle monitors"))
+hl.bind(mainMod .. " + M",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle music"), { description = "Shell: Toggle music (matches ii)" })
+hl.bind(mainMod .. " + ALT + M", hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle monitors"))
 hl.bind(mainMod .. " + R",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/reload.sh"))
-hl.bind(mainMod .. " + D",      hl.dsp.exec_cmd("~/.config/hypr/scripts/qs_manager.sh toggle applauncher"))
 hl.bind(mainMod .. " + C",      hl.dsp.exec_cmd("~/.config/hypr/scripts/qs_manager.sh toggle clipboard"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle settings"))
-hl.bind(mainMod .. " + Q",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle music"))
+hl.bind(mainMod .. " + Q",      hl.dsp.window.close())
 hl.bind(mainMod .. " + B",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle battery"))
 hl.bind(mainMod .. " + W",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle wallpaper"))
 hl.bind(mainMod .. " + S",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle calendar"))
