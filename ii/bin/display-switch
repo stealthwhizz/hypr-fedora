@@ -3,6 +3,20 @@
 set -euo pipefail
 
 STATE_FILE="$HOME/.cache/hypr-display-mode"
+LOCK_FILE="$HOME/.cache/hypr-display-switch.lock"
+
+# Debounce: a monitor reconfiguration + settle/reload cycle takes ~2-3s, and
+# on this hybrid-GPU laptop, a second switch landing mid-transition has
+# caused real breakage (Qt briefly drops to zero outputs during any monitor
+# reconfig, and overlapping calls can leave an output's Wayland side stuck
+# unannounced - "unknown output" to every client, not just Quickshell).
+# Reject a second press outright rather than let it race.
+exec 9>"$LOCK_FILE"
+if ! flock -n 9; then
+    notify-send "Display Mode" "Still switching, one moment..."
+    exit 0
+fi
+
 MONITORS_JSON="$(hyprctl monitors all -j)"
 
 INTERNAL="$(jq -r '.[] | select(.name | test("^eDP|^LVDS")) | .name' <<<"$MONITORS_JSON" | head -1)"
@@ -43,3 +57,34 @@ esac
 
 echo "$NEXT" > "$STATE_FILE"
 notify-send "Display Mode" "$LABEL"
+
+# Enabling/disabling a monitor briefly drops Qt/Quickshell to zero outputs
+# ("There are no outputs - creating placeholder screen" in the Quickshell
+# log), and any window that re-binds its screen during that instant gets
+# stuck on the placeholder ("Layershell screen does not correspond to a
+# real screen") - the bar disappearing or widget toggles silently doing
+# nothing until the next full reload. Wait for the reconfiguration to
+# settle, then force one - held under the same lock as the switch itself,
+# so a second press can't land mid-transition and race it.
+sleep 2
+bash "$HOME/.config/hypr/scripts/reload.sh" >/dev/null 2>&1
+
+# This laptop has hybrid graphics (the HDMI port is on a different GPU than
+# the laptop panel), and reconfiguring a monitor - even purely in software,
+# not just a physical plug/unplug - can leave it stuck at the driver level:
+# Hyprland's own state (hyprctl monitors) reports it as enabled and
+# correctly modeset, but the Wayland output itself never gets (re-)announced
+# to any client, so it renders nothing. No script or config can force that
+# re-announcement - only a real hotplug event (unplug + replug the cable)
+# clears it. Detect it with grim (a neutral, unrelated Wayland client - if
+# even it can't see the output, nothing can) and say so plainly instead of
+# leaving a silent, unexplained blank screen.
+if [ "$NEXT" != "internal_only" ]; then
+    PROBE_ERR="$(mktemp)"
+    if command -v grim &>/dev/null && ! grim -o "$EXTERNAL" - >/dev/null 2>"$PROBE_ERR"; then
+        if grep -q "unknown output" "$PROBE_ERR" 2>/dev/null; then
+            notify-send -u critical "Display Mode" "$EXTERNAL isn't responding at the driver level (hybrid-GPU quirk on this machine). Unplug and replug the cable to fix it."
+        fi
+    fi
+    rm -f "$PROBE_ERR"
+fi

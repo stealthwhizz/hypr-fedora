@@ -13,6 +13,17 @@ PanelWindow {
     id: masterWindow
     color: "transparent"
 
+    // Without an explicit screen binding, this window defaults to whichever
+    // screen was primary/first at Quickshell startup (almost always eDP-1)
+    // and never re-evaluates. Disabling that monitor (e.g. via display-switch's
+    // "external only" mode) orphans this window on a now-dead screen —
+    // implicitWidth/implicitHeight (bound to masterWindow.screen.width/height
+    // below) break, and every widget toggle routed through this window's IPC
+    // handler becomes unreliable. Quickshell.screens[0] always points at a
+    // currently-live screen and re-evaluates automatically when the monitor
+    // set changes, so this window can never end up attached to a dead output.
+    screen: Quickshell.screens[0]
+
     Caching { id: paths }
 
     IpcHandler {
