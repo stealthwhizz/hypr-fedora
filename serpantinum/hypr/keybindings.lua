@@ -50,8 +50,9 @@ hl.bind(mainMod .. " + E",      hl.dsp.exec_cmd("nautilus"))
 hl.bind(mainMod .. " + ALT + T", hl.dsp.exec_cmd("Telegram"))
 hl.bind(mainMod .. " + O",      hl.dsp.exec_cmd("obsidian"))
 hl.bind(mainMod .. " + RETURN", hl.dsp.exec_cmd(terminal))
-hl.bind(mainMod .. " + T",      hl.dsp.exec_cmd(terminal), { description = "App: Terminal (matches ii)" })
-hl.bind("CTRL + ALT + T",       hl.dsp.exec_cmd(terminal), { description = "App: Terminal (matches ii)" })
+hl.bind(mainMod .. " + T",      hl.dsp.exec_cmd(terminal), { description = "App: Terminal (kitty)" })
+hl.bind("CTRL + ALT + T",       hl.dsp.exec_cmd("ptyxis"), { description = "App: Terminal (Fedora default)" })
+hl.bind(mainMod .. " + D",      hl.dsp.exec_cmd("flatpak run com.discordapp.Discord"), { description = "App: Discord" })
 
 -- ───────── Quickshell Controls ─────────
 hl.bind(mainMod .. " + M",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle music"), { description = "Shell: Toggle music (matches ii)" })

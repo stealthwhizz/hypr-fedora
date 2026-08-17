@@ -81,7 +81,9 @@ Full reference, `keybindings.lua` — everything from the original repo plus the
 | `Super+E` | Nautilus (file manager) |
 | `Super+Alt+T` | Telegram (moved off `Super+T` — see terminal below) |
 | `Super+O` | Obsidian |
-| `Super+Return` / `Super+T` / `Ctrl+Alt+T` | Terminal — three keys on purpose, matching `ii`'s own redundant terminal binds |
+| `Super+D` | Discord (Flatpak — `flatpak run com.discordapp.Discord`) |
+| `Super+Return` / `Super+T` | Terminal (kitty) |
+| `Ctrl+Alt+T` | Terminal (`ptyxis` — Fedora's default GNOME terminal, deliberately a *different* terminal app than `Super+T`, not a duplicate of it) |
 
 **Quickshell panels** (all `Super+<key>`, toggle open/close)
 
@@ -94,7 +96,7 @@ Full reference, `keybindings.lua` — everything from the original repo plus the
 | `Shift+S` | Settings | `H` | Guide |
 | `B` | Battery/power | `W` | Wallpaper picker |
 
-`Super+D` is now unbound — it used to duplicate `Alt+Space` for search; dropped per request to keep only one key per action.
+`Super+D` used to duplicate `Alt+Space` for search (dropped, kept only `Alt+Space`) — now reassigned to Discord, see Applications above.
 
 **Workspaces**
 
