@@ -42,13 +42,28 @@ def format_header(date_obj, now):
 
 
 def fetch_gcalcli_events():
+    # --json only exists on gcalcli's unreleased GitHub main branch; the
+    # actual installed version (4.5.1, from PyPI via pipx) only has --tsv.
+    # Parse the header row instead of hardcoding column positions/order, so
+    # this doesn't silently break on a different gcalcli version.
     result = subprocess.run(
-        ["gcalcli", "agenda", "today", "tomorrow", "--details", "location", "--json"],
+        ["gcalcli", "agenda", "today", "tomorrow", "--details", "location", "--tsv"],
         capture_output=True, text=True, timeout=20,
     )
     if result.returncode != 0:
         raise RuntimeError(result.stderr.strip() or "gcalcli exited non-zero")
-    return json.loads(result.stdout)
+
+    lines = result.stdout.strip("\n").split("\n")
+    if not lines or not lines[0]:
+        return []
+    header = lines[0].split("\t")
+    events = []
+    for line in lines[1:]:
+        if not line:
+            continue
+        fields = line.split("\t")
+        events.append(dict(zip(header, fields)))
+    return events
 
 
 def build_output(raw_events, now):
