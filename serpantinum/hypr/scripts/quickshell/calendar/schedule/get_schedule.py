@@ -8,9 +8,12 @@
 # installed), parsing the ICS format directly rather than pulling in the
 # `icalendar` package.
 #
-# Setup: open Google Calendar -> Settings -> your calendar -> "Integrate
-# calendar" -> "Secret address in iCal format" -> copy that URL into
-# schedule/.env as GOOGLE_CALENDAR_ICS_URL=... (gitignored, never committed).
+# Setup: open Google Calendar -> Settings -> pick a calendar in the sidebar
+# (repeat per calendar you want included) -> "Integrate calendar" -> "Secret
+# address in iCal format" -> copy each URL into schedule/.env as
+# GOOGLE_CALENDAR_ICS_URLS=url1,url2,... (comma-separated, gitignored, never
+# committed). Events from all listed calendars are merged into one timeline,
+# with identical events appearing in more than one calendar deduped.
 import json
 import os
 from datetime import datetime, timedelta, timezone
@@ -181,24 +184,43 @@ def build_output(events, now):
 
 def update_schedule():
     env = load_env()
-    ics_url = env.get("GOOGLE_CALENDAR_ICS_URL", "")
+    ics_urls = [u.strip() for u in env.get("GOOGLE_CALENDAR_ICS_URLS", "").split(",") if u.strip()]
     now = datetime.now()
 
-    if not ics_url:
+    if not ics_urls:
         output = {"header": "No Google Calendar configured",
                    "lessons": [], "link": "https://calendar.google.com/"}
     else:
-        try:
-            resp = requests.get(ics_url, timeout=10)
-            resp.raise_for_status()
-            events = parse_events(resp.text)
-            output = build_output(events, now)
-        except Exception as e:
+        all_events = []
+        errors = []
+        for url in ics_urls:
+            try:
+                resp = requests.get(url, timeout=10)
+                resp.raise_for_status()
+                all_events.extend(parse_events(resp.text))
+            except Exception as e:
+                # One broken calendar shouldn't take down the others.
+                errors.append(str(e))
+
+        if not all_events and errors:
             output = {"header": "Error", "link": "", "lessons": [{
                 "type": "class", "time": "Error", "subject": "Check schedule/.env / connection",
-                "room": "", "teacher": str(e), "start": 0, "end": 0,
+                "room": "", "teacher": "; ".join(errors), "start": 0, "end": 0,
                 "width": 220, "char_limit": 30, "is_compact": False,
             }]}
+        else:
+            # Dedupe identical events that appear in more than one calendar
+            # (e.g. a shared event visible on both a primary and a shared
+            # calendar) before laying out the timeline.
+            seen = set()
+            deduped = []
+            for ev in all_events:
+                key = (ev.get("start_raw"), ev.get("end_raw"), ev.get("summary"))
+                if key in seen:
+                    continue
+                seen.add(key)
+                deduped.append(ev)
+            output = build_output(deduped, now)
 
     os.makedirs(CACHE_DIR, exist_ok=True)
     with open(CACHE_FILE, "w") as f:
