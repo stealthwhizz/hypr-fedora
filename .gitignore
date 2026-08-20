@@ -3,8 +3,9 @@ ii/hypr/hyprland/colors.lua
 ii/hypr/hyprlock/colors.conf
 serpantinum/hypr/colors.lua
 
-# Secrets (API keys)
+# Secrets (API keys / private feed URLs)
 serpantinum/hypr/scripts/quickshell/calendar/.env
+serpantinum/hypr/scripts/quickshell/calendar/schedule/.env
 
 # Editor/OS cruft
 *~

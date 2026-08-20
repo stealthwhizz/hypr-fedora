@@ -1,261 +1,209 @@
 #!/usr/bin/env python3
+# Pulls today's events from a Google Calendar's private iCal feed and renders
+# them into the same JSON shape CalendarPopup.qml already expects (it was
+# originally fed by a Selenium scrape of a Danish school timetable site, tied
+# to the original author's own Firefox profile and requiring `nix-shell` -
+# which isn't even installed on this system, so that path never worked here
+# at all). No new Python dependencies: only stdlib + `requests` (already
+# installed), parsing the ICS format directly rather than pulling in the
+# `icalendar` package.
+#
+# Setup: open Google Calendar -> Settings -> your calendar -> "Integrate
+# calendar" -> "Secret address in iCal format" -> copy that URL into
+# schedule/.env as GOOGLE_CALENDAR_ICS_URL=... (gitignored, never committed).
 import json
 import os
-import re
-import time
-from datetime import datetime, timedelta
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from datetime import datetime, timedelta, timezone
 
-# --- CONFIGURATION ---
-BASE_URL = "https://all.uddataplus.dk/skema/?id=id_menu_skema"
-RESOURCE_ID = "99217" 
-PROFILE_PATH = "/home/ilyamiro/.mozilla/firefox/schedule.special"
+import requests
 
 CACHE_DIR = os.environ.get("QS_CACHE_SCHEDULE", os.path.expanduser("~/.cache/quickshell/schedule"))
 CACHE_FILE = os.path.join(CACHE_DIR, "schedule.json")
+ENV_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
 
-# Time Configuration (24-hour format)
-SCHOOL_START_STR = "08:30"
-SCHOOL_END_STR = "15:40"
+# The original UI is a fixed horizontal timeline shaped for a school day.
+# Reused as-is for a general daily agenda - a waking-hours window rather than
+# a full 24h span, so the timeline stays usefully proportioned.
+DAY_START_STR = "07:00"
+DAY_END_STR = "22:00"
+TOTAL_AVAILABLE_WIDTH_PX = 750
 
-# Layout Configuration
-TOTAL_AVAILABLE_WIDTH_PX = 750 
 
-# Base URLs
-GENERIC_URL = f"{BASE_URL}#menu_skema:"
-BASE_LINK_URL = BASE_URL
+def load_env():
+    env = {}
+    if os.path.isfile(ENV_FILE):
+        with open(ENV_FILE) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                env[k.strip()] = v.strip()
+    return env
 
-def get_specific_url(date_obj):
-    date_str = date_obj.strftime("%Y-%m-%d")
-    return f"{BASE_LINK_URL}#u:e!{RESOURCE_ID}!{date_str}"
 
-def to_epoch(time_str, date_obj):
-    try:
-        clean_time = time_str.replace('.', ':').strip()
-        hour, minute = map(int, clean_time.split(':'))
-        dt = date_obj.replace(hour=hour, minute=minute, second=0, microsecond=0)
-        return int(dt.timestamp())
-    except Exception as e:
-        return 0
+def unfold_ics(text):
+    # RFC 5545 line folding: a line starting with a space/tab is a
+    # continuation of the previous line.
+    lines = text.replace("\r\n", "\n").split("\n")
+    out = []
+    for line in lines:
+        if line.startswith(" ") or line.startswith("\t"):
+            if out:
+                out[-1] += line[1:]
+        else:
+            out.append(line)
+    return out
 
-def calculate_ppm():
-    start_h, start_m = map(int, SCHOOL_START_STR.replace('.', ':').split(':'))
-    end_h, end_m = map(int, SCHOOL_END_STR.replace('.', ':').split(':'))
-    start_minutes = start_h * 60 + start_m
-    end_minutes = end_h * 60 + end_m
-    total_minutes = end_minutes - start_minutes
-    if total_minutes <= 0: return 1.5 
-    return TOTAL_AVAILABLE_WIDTH_PX / total_minutes
 
-PIXELS_PER_MINUTE = calculate_ppm()
+def parse_events(ics_text):
+    events = []
+    cur = None
+    for line in unfold_ics(ics_text):
+        if line == "BEGIN:VEVENT":
+            cur = {}
+        elif line == "END:VEVENT":
+            if cur is not None:
+                events.append(cur)
+            cur = None
+        elif cur is not None:
+            if ":" not in line:
+                continue
+            key, _, value = line.partition(":")
+            key_base = key.split(";")[0]
+            if key_base == "DTSTART":
+                cur["start_raw"] = value.strip()
+                cur["start_allday"] = "VALUE=DATE" in key and "VALUE=DATE-TIME" not in key
+            elif key_base == "DTEND":
+                cur["end_raw"] = value.strip()
+            elif key_base == "SUMMARY":
+                cur["summary"] = value.replace("\\,", ",").replace("\\;", ";").replace("\\n", " ")
+            elif key_base == "LOCATION":
+                cur["location"] = value.replace("\\,", ",").replace("\\;", ";")
+    return events
 
-def extract_lessons_from_group(group, date_obj):
-    raw_lessons = []
-    processed_data = []
-    
-    lesson_elems = group.find_elements(By.XPATH, ".//*[local-name()='g'][count(*[local-name()='rect']) > 0]")
-    
-    for elem in lesson_elems:
-        try:
-            texts = elem.find_elements(By.TAG_NAME, "text")
-            if len(texts) >= 3:
-                time_raw = texts[0].text.strip()
-                if "-" in time_raw:
-                    start_str, end_str = time_raw.split('-')
-                    teacher_str = ""
-                    if len(texts) >= 4:
-                        teacher_str = texts[3].text
-                    
-                    if texts[1].text != "Lektiecafe": 
-                        start_epoch = to_epoch(start_str, date_obj)
-                        end_epoch = to_epoch(end_str, date_obj)
-                        
-                        if start_epoch > 0 and end_epoch > 0:
-                            raw_lessons.append({
-                                "type": "class", 
-                                "time": time_raw,
-                                "subject": texts[1].text,
-                                "room": texts[2].text,
-                                "teacher": teacher_str,
-                                "start": start_epoch,
-                                "end": end_epoch
-                            })
-        except:
-            continue
 
-    raw_lessons.sort(key=lambda x: x['start'])
+def parse_ics_datetime(value):
+    value = value.strip()
+    if value.endswith("Z"):
+        dt = datetime.strptime(value, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+        return dt.astimezone().replace(tzinfo=None)
+    if "T" in value:
+        return datetime.strptime(value, "%Y%m%dT%H%M%S")
+    return datetime.strptime(value, "%Y%m%d")  # all-day, date only
 
-    start_h, start_m = map(int, SCHOOL_START_STR.replace('.', ':').split(':'))
-    end_h, end_m = map(int, SCHOOL_END_STR.replace('.', ':').split(':'))
-    
-    timeline_start = date_obj.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
-    timeline_end = date_obj.replace(hour=end_h, minute=end_m, second=0, microsecond=0)
-    
-    current_cursor = int(timeline_start.timestamp())
-    standard_end_cursor = int(timeline_end.timestamp())
 
-    def get_layout_props(duration_seconds):
-        duration_seconds = max(0, duration_seconds)
-        minutes = duration_seconds / 60
-        width = minutes * PIXELS_PER_MINUTE
-        char_limit = int(width / 5) 
-        return int(width), char_limit
+def to_epoch(dt):
+    return int(dt.timestamp())
 
-    for lesson in raw_lessons:
-        if lesson['start'] > current_cursor:
-            gap_duration = lesson['start'] - current_cursor
-            if gap_duration > 60: 
-                width, _ = get_layout_props(gap_duration)
-                gap_minutes = int(gap_duration / 60)
-                processed_data.append({
-                    "type": "gap",
-                    "width": width,
-                    "desc": f"{gap_minutes}m",
-                    "start": current_cursor,
-                    "end": lesson['start']
-                })
-            current_cursor = lesson['start']
-        
-        if lesson['end'] <= int(timeline_start.timestamp()):
-            continue
 
-        if lesson['start'] >= current_cursor:
-            duration = lesson['end'] - current_cursor
-            width, char_limit = get_layout_props(duration)
-            lesson["width"] = width
-            lesson["char_limit"] = char_limit
-            lesson["is_compact"] = width < 70
-            processed_data.append(lesson)
-            current_cursor = lesson['end']
+def get_layout_props(duration_seconds, ppm):
+    duration_seconds = max(0, duration_seconds)
+    minutes = duration_seconds / 60
+    width = minutes * ppm
+    return int(width), int(width / 5)
 
-    if current_cursor < standard_end_cursor:
-        gap_duration = standard_end_cursor - current_cursor
-        if gap_duration > 60:
-            width, _ = get_layout_props(gap_duration)
-            processed_data.append({
-                "type": "gap",
-                "width": width,
-                "desc": "End of Day",
-                "start": current_cursor,
-                "end": standard_end_cursor
-            })
-
-    return processed_data
-
-def get_valid_day_columns(driver):
-    try:
-        wait = WebDriverWait(driver, 3)
-        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "skemaBrikGruppe")))
-        groups = driver.find_elements(By.XPATH, "//*[contains(@class, 'DagMedBrikker')]//*[contains(@class, 'skemaBrikGruppe')]/..")
-        def get_x_pos(elem):
-            transform = elem.get_attribute("transform")
-            if not transform: return 99999
-            match = re.search(r"translate\((\d+)", transform)
-            return int(match.group(1)) if match else 99999
-        return sorted(groups, key=get_x_pos)
-    except TimeoutException:
-        return [] 
 
 def format_header(date_obj, now):
     delta = (date_obj.date() - now.date()).days
     date_str = date_obj.strftime("%A, %d %b")
-    suffix = ""
-    if delta == 0: suffix = "(Today)"
-    elif delta == 1: suffix = "(Tomorrow)"
-    elif delta < 7: suffix = "(This Week)"
-    else: suffix = "(Upcoming)"
-    return f"{date_str} {suffix}"
+    suffix = "(Today)" if delta == 0 else "(Tomorrow)" if delta == 1 else ""
+    return f"{date_str} {suffix}".strip()
+
+
+def build_output(events, now):
+    start_h, start_m = map(int, DAY_START_STR.split(":"))
+    end_h, end_m = map(int, DAY_END_STR.split(":"))
+    total_minutes = (end_h * 60 + end_m) - (start_h * 60 + start_m)
+    ppm = TOTAL_AVAILABLE_WIDTH_PX / total_minutes
+
+    today = now.date()
+    todays = []
+    for ev in events:
+        try:
+            if ev.get("start_allday") or "start_raw" not in ev:
+                continue  # all-day events don't fit this timeline's shape
+            start_dt = parse_ics_datetime(ev["start_raw"])
+            end_dt = parse_ics_datetime(ev["end_raw"]) if ev.get("end_raw") else start_dt + timedelta(hours=1)
+        except Exception:
+            continue
+        if start_dt.date() != today:
+            continue
+        todays.append({
+            "type": "class",
+            "time": f"{start_dt.strftime('%H:%M')}-{end_dt.strftime('%H:%M')}",
+            "subject": ev.get("summary", "(No title)"),
+            "room": ev.get("location", ""),
+            "teacher": "",
+            "start": to_epoch(start_dt),
+            "end": to_epoch(end_dt),
+        })
+
+    todays.sort(key=lambda x: x["start"])
+
+    timeline_start = now.replace(hour=start_h, minute=start_m, second=0, microsecond=0)
+    timeline_end = now.replace(hour=end_h, minute=end_m, second=0, microsecond=0)
+    current_cursor = to_epoch(timeline_start)
+    standard_end_cursor = to_epoch(timeline_end)
+
+    processed = []
+    for ev in todays:
+        if ev["start"] > current_cursor:
+            gap = ev["start"] - current_cursor
+            if gap > 60:
+                width, _ = get_layout_props(gap, ppm)
+                processed.append({"type": "gap", "width": width, "desc": f"{int(gap / 60)}m",
+                                   "start": current_cursor, "end": ev["start"]})
+            current_cursor = ev["start"]
+
+        if ev["end"] <= to_epoch(timeline_start):
+            continue
+
+        if ev["start"] >= current_cursor:
+            duration = ev["end"] - current_cursor
+            width, char_limit = get_layout_props(duration, ppm)
+            ev["width"] = width
+            ev["char_limit"] = char_limit
+            ev["is_compact"] = width < 70
+            processed.append(ev)
+            current_cursor = ev["end"]
+
+    if current_cursor < standard_end_cursor:
+        gap = standard_end_cursor - current_cursor
+        if gap > 60:
+            width, _ = get_layout_props(gap, ppm)
+            processed.append({"type": "gap", "width": width, "desc": "Free",
+                               "start": current_cursor, "end": standard_end_cursor})
+
+    header = format_header(now, now) if todays else "No events today"
+    return {"header": header, "lessons": processed, "link": "https://calendar.google.com/"}
+
 
 def update_schedule():
-    options = Options()
-    options.add_argument("--headless") 
-    options.add_argument("-profile")
-    options.add_argument(PROFILE_PATH)
+    env = load_env()
+    ics_url = env.get("GOOGLE_CALENDAR_ICS_URL", "")
+    now = datetime.now()
 
-    driver = None
-    output = {"header": "No Classes Found", "lessons": [], "link": GENERIC_URL}
-    
-    try:
-        driver = webdriver.Firefox(options=options)
-        
-        # PREVENT HANGING: Set a 30-second timeout for the page to load
-        driver.set_page_load_timeout(30)
-        
-        now = datetime.now()
-        
-        end_of_school_today = now.replace(hour=15, minute=40)
-        
-        search_date = now
-        check_today = True
+    if not ics_url:
+        output = {"header": "No Google Calendar configured",
+                   "lessons": [], "link": "https://calendar.google.com/"}
+    else:
+        try:
+            resp = requests.get(ics_url, timeout=10)
+            resp.raise_for_status()
+            events = parse_events(resp.text)
+            output = build_output(events, now)
+        except Exception as e:
+            output = {"header": "Error", "link": "", "lessons": [{
+                "type": "class", "time": "Error", "subject": "Check schedule/.env / connection",
+                "room": "", "teacher": str(e), "start": 0, "end": 0,
+                "width": 220, "char_limit": 30, "is_compact": False,
+            }]}
 
-        if now > end_of_school_today:
-            check_today = False
-            search_date = now + timedelta(days=1)
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    with open(CACHE_FILE, "w") as f:
+        json.dump(output, f)
 
-        found_classes = False
-        weeks_checked = 0
-        
-        while not found_classes and weeks_checked < 6:
-            current_week_url = get_specific_url(search_date)
-            driver.get(current_week_url)
-            
-            time.sleep(2.5) 
-            
-            day_columns = get_valid_day_columns(driver)
-            
-            if day_columns:
-                start_weekday_idx = search_date.weekday() 
-                
-                for day_idx in range(len(day_columns)):
-                    monday_of_week = search_date - timedelta(days=search_date.weekday())
-                    target_date = monday_of_week + timedelta(days=day_idx)
-                    
-                    if target_date.date() < search_date.date():
-                        continue
-                        
-                    if target_date.date() == now.date() and not check_today:
-                        continue
-                        
-                    if target_date.weekday() > 4: 
-                        continue
-
-                    lessons = extract_lessons_from_group(day_columns[day_idx], target_date)
-                    
-                    if target_date.date() == now.date():
-                        if not lessons: continue
-                        real_classes = [l for l in lessons if l['type'] == 'class']
-                        if not real_classes: continue
-                        if now.timestamp() > real_classes[-1]['end']: continue
-
-                    has_real_classes = any(l.get('type') == 'class' for l in lessons)
-
-                    if lessons and has_real_classes:
-                        output["lessons"] = lessons
-                        output["header"] = format_header(target_date, now)
-                        output["link"] = current_week_url
-                        found_classes = True
-                        break
-            
-            if not found_classes:
-                days_ahead = 7 - search_date.weekday()
-                search_date = search_date + timedelta(days=days_ahead)
-                check_today = True 
-                weeks_checked += 1
-
-    except Exception as e:
-        print(f"Error: {e}")
-        output = {"header": "Error", "lessons": [{"type": "class", "time": "Error", "subject": "Check Script", "room": "!", "teacher": str(e), "start": 0, "end": 0, "width": 100, "char_limit": 10}], "link": ""}
-
-    finally:
-        if driver: driver.quit()
-        os.makedirs(os.path.dirname(CACHE_FILE), exist_ok=True)
-        with open(CACHE_FILE, "w") as f:
-            json.dump(output, f)
 
 if __name__ == "__main__":
     update_schedule()
