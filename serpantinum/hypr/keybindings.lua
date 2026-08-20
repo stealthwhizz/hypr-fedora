@@ -53,13 +53,18 @@ hl.bind(mainMod .. " + O",      hl.dsp.exec_cmd("obsidian"))
 hl.bind(mainMod .. " + T",      hl.dsp.exec_cmd(terminal), { description = "App: Terminal (kitty)" })
 hl.bind("CTRL + ALT + T",       hl.dsp.exec_cmd("ptyxis"), { description = "App: Terminal (Fedora default)" })
 hl.bind(mainMod .. " + D",      hl.dsp.exec_cmd("flatpak run com.discordapp.Discord"), { description = "App: Discord" })
+-- gnome-control-center refuses to run at all outside a GNOME/Unity session
+-- (checks XDG_CURRENT_DESKTOP and exits immediately otherwise) - override
+-- it for just this one launch, not the whole session, since other things
+-- (portals, GTK theming) may rely on XDG_CURRENT_DESKTOP correctly saying
+-- Hyprland.
+hl.bind(mainMod .. " + I",      hl.dsp.exec_cmd("XDG_CURRENT_DESKTOP=GNOME gnome-control-center"), { description = "App: System Settings" })
 
 -- ───────── Quickshell Controls ─────────
 hl.bind(mainMod .. " + M",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle music"), { description = "Shell: Toggle music (matches ii)" })
 hl.bind(mainMod .. " + ALT + M", hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle monitors"))
 hl.bind(mainMod .. " + R",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/reload.sh"))
 hl.bind(mainMod .. " + C",      hl.dsp.exec_cmd("~/.config/hypr/scripts/qs_manager.sh toggle clipboard"))
-hl.bind(mainMod .. " + I",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle settings"), { description = "Shell: Toggle settings (matches ii)" })
 hl.bind(mainMod .. " + Q",      hl.dsp.window.close())
 hl.bind(mainMod .. " + B",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle battery"))
 hl.bind(mainMod .. " + W",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle wallpaper"))
