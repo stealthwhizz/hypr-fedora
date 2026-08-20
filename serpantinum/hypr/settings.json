@@ -538,6 +538,13 @@
             "key": "comma",
             "dispatcher": "exec",
             "command": "bash ~/.config/hypr/scripts/minimize_all.sh"
+        },
+        {
+            "type": "bind",
+            "mods": "SUPER SHIFT",
+            "key": "I",
+            "dispatcher": "exec",
+            "command": "bash ~/.config/hypr/scripts/qs_manager.sh toggle settings"
         }
     ],
     "monitors": [

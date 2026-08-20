@@ -66,6 +66,7 @@ hl.bind(mainMod .. " + ALT + M", hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs
 hl.bind(mainMod .. " + R",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/reload.sh"))
 hl.bind(mainMod .. " + C",      hl.dsp.exec_cmd("~/.config/hypr/scripts/qs_manager.sh toggle clipboard"))
 hl.bind(mainMod .. " + Q",      hl.dsp.window.close())
+hl.bind(mainMod .. " + SHIFT + I", hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle settings"), { description = "Shell: Toggle settings panel" })
 hl.bind(mainMod .. " + B",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle battery"))
 hl.bind(mainMod .. " + W",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle wallpaper"))
 hl.bind(mainMod .. " + S",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle calendar"))

@@ -86,6 +86,7 @@ Full reference, `keybindings.lua` — everything from the original repo plus the
 | `Super+T` | Terminal (kitty) |
 | `Ctrl+Alt+T` | Terminal (`ptyxis` — Fedora's default GNOME terminal, deliberately a *different* terminal app than `Super+T`, not a duplicate of it) |
 | `Super+I` | System Settings (`gnome-control-center`, real GNOME Settings — not the shell's own settings panel). It refuses to launch outside a GNOME/Unity session by default (checks `XDG_CURRENT_DESKTOP` and exits immediately), so the bind overrides that env var for just this one launch: `XDG_CURRENT_DESKTOP=GNOME gnome-control-center`. |
+| `Super+Shift+I` | The shell's own Quickshell settings panel (wallpaper dir, UI scale, weather config, the Keybinds reference tab itself, etc.) — gave this back a keybind since `Super+I` and `Super+Shift+S` were both reassigned away from it. |
 
 **Quickshell panels** (all `Super+<key>`, toggle open/close)
 
