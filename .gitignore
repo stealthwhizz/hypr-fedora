@@ -3,9 +3,10 @@ ii/hypr/hyprland/colors.lua
 ii/hypr/hyprlock/colors.conf
 serpantinum/hypr/colors.lua
 
-# Secrets (API keys / private feed URLs)
+# Secrets (API keys)
+# Note: the calendar schedule strip uses gcalcli (OAuth token lives outside
+# this repo, in ~/.local/share/gcalcli/oauth) - nothing repo-local to ignore.
 serpantinum/hypr/scripts/quickshell/calendar/.env
-serpantinum/hypr/scripts/quickshell/calendar/schedule/.env
 
 # Editor/OS cruft
 *~
