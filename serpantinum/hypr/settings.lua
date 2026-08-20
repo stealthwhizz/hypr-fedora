@@ -43,6 +43,15 @@ hl.config({
         font_family              = "JetBrains Mono",
         disable_hyprland_logo    = true,
         disable_splash_rendering = true,
+        -- hyprland-guiutils IS installed (/usr/bin/hyprland-dialog exists,
+        -- confirmed via `strings /usr/bin/Hyprland` showing the exact check:
+        -- a PATH lookup for "hyprland-dialog") but this build still warns
+        -- at every startup regardless - a known, harmless version-lag
+        -- mismatch between this COPR build and the guiutils package (see
+        -- https://github.com/hyprwm/hyprland-guiutils/issues/11, closed
+        -- upstream as "not planned"). Silencing via the official option
+        -- rather than chasing an unfixable cosmetic warning further.
+        disable_hyprland_guiutils_check = true,
     },
 
     animations = {
