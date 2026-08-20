@@ -61,6 +61,7 @@ Full reference, `keybindings.lua` — everything from the original repo plus the
 | `Shift+Print` | Screenshot: region select, then edit in satty |
 | `Super+Print` | Screenshot: instant full screen |
 | `Super+Shift+Print` | Screenshot: instant full screen, then edit in satty |
+| `Super+Shift+S` | Screenshot: region select (same as `Print`, matches ii's own Shift+S convention) |
 | `XF86PowerOff` | Lock screen |
 | `Super+L` | Lock screen |
 
@@ -93,7 +94,7 @@ Full reference, `keybindings.lua` — everything from the original repo plus the
 | `Alt+M` | Monitors (moved off `Super+M` to make room for music) | `N` | Network |
 | `R` | Reload shell | `Shift+T` | Focustime |
 | `C` | Clipboard | `V` | Volume |
-| `Shift+S` | Settings | `H` | Guide |
+| `I` | Settings (matches ii) | `H` | Guide |
 | `B` | Battery/power | `W` | Wallpaper picker |
 
 `Super+D` used to duplicate `Alt+Space` for search (dropped, kept only `Alt+Space`) — now reassigned to Discord, see Applications above.

@@ -30,6 +30,7 @@ hl.bind("Print",                       hl.dsp.exec_cmd("~/.config/hypr/scripts/s
 hl.bind("SHIFT + Print",               hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh --edit"),         { locked = true })
 hl.bind(mainMod .. " + Print",         hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh --full"),        { locked = true })
 hl.bind(mainMod .. " + SHIFT + Print", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh --full --edit"), { locked = true })
+hl.bind(mainMod .. " + SHIFT + S",     hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh"),               { locked = true, description = "Screenshot: region select (matches ii)" })
 
 hl.bind("XF86PowerOff",   hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/lock.sh"), { locked = true })
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/lock.sh"), { locked = true, repeating = true })
@@ -58,7 +59,7 @@ hl.bind(mainMod .. " + M",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_
 hl.bind(mainMod .. " + ALT + M", hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle monitors"))
 hl.bind(mainMod .. " + R",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/reload.sh"))
 hl.bind(mainMod .. " + C",      hl.dsp.exec_cmd("~/.config/hypr/scripts/qs_manager.sh toggle clipboard"))
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle settings"))
+hl.bind(mainMod .. " + I",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle settings"), { description = "Shell: Toggle settings (matches ii)" })
 hl.bind(mainMod .. " + Q",      hl.dsp.window.close())
 hl.bind(mainMod .. " + B",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle battery"))
 hl.bind(mainMod .. " + W",      hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/qs_manager.sh toggle wallpaper"))
