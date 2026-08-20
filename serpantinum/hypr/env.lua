@@ -1,5 +1,14 @@
 hl.env("NIXOS_OZONE_WL", "1")
 
+-- Hybrid graphics: Intel Iris Xe (card1, i915, stable) + NVIDIA RTX 3060
+-- (card2, nouveau, driver GSP-firmware RPC crashes seen in dmesg/journal -
+-- e.g. r535_gsp_msgq_wait warnings right before a full system crash/reboot).
+-- No GPU preference was set at all, so Hyprland auto-picked NVIDIA as the
+-- primary render GPU (the "more powerful" one) - exactly the unstable path.
+-- card1 listed first makes Intel primary; card2 stays listed since the
+-- external HDMI port is physically wired through the NVIDIA GPU.
+hl.env("AQ_DRM_DEVICES", "/dev/dri/card1:/dev/dri/card2")
+
 -- Hyprland is launched directly by GDM, not through a login shell that
 -- sources .bashrc, so ~/.local/bin was never on its PATH at all - anything
 -- Quickshell spawns via execDetached() (a direct PATH-based exec, not a
