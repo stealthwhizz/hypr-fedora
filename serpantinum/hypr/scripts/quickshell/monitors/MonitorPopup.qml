@@ -388,8 +388,11 @@ Item {
             let jsonCmd = "jq '.monitors = " + safeJson + "' ~/.config/hypr/settings.json > ~/.config/hypr/settings.json.tmp && mv ~/.config/hypr/settings.json.tmp ~/.config/hypr/settings.json";
             let postReloadCmd = "swww kill ; sleep 0.2 ; swww-daemon &";
 
+            let monLua = "hl.monitor({ output = '" + m.name + "', mode = '" + m.resW + "x" + m.resH + "@" + m.rate + "', position = '0x0', scale = '" + m.sysScale + "'" + (m.transform !== 0 ? ", transform = " + m.transform : "") + " })";
+            let evalCmd = "hyprctl eval \"" + monLua + "\"";
+
             Quickshell.execDetached(["notify-send", "Display Update", "Applied & Saved: " + m.resW + "x" + m.resH + " @ " + m.rate + "Hz"]);
-            Quickshell.execDetached(["sh", "-c", "hyprctl keyword monitor " + monitorStr + " ; " + jsonCmd + " ; " + postReloadCmd]);
+            Quickshell.execDetached(["sh", "-c", evalCmd + " ; " + jsonCmd + " ; " + postReloadCmd]);
             
             window.debugLog("Executed single monitor apply.");
         } else {
@@ -472,7 +475,8 @@ Item {
                     monitorStr += ",transform," + r.transform;
                 }
                 
-                batchCmds.push("keyword monitor " + monitorStr);
+                let monLua = "hl.monitor({ output = '" + r.name + "', mode = '" + r.resW + "x" + r.resH + "@" + r.rate + "', position = '" + r.x + "x" + r.y + "', scale = '" + r.sysScale + "'" + (r.transform !== 0 ? ", transform = " + r.transform : "") + " })";
+                batchCmds.push(monLua);
                 summaryString += r.name + " ";
 
                 jsonMonitorsArray.push({
@@ -480,8 +484,8 @@ Item {
                     x: r.x, y: r.y, scale: r.sysScale, transform: r.transform
                 });
             }
-            
-            let fullHyprCmd = "hyprctl --batch '" + batchCmds.join(" ; ") + "'";
+
+            let fullHyprCmd = "hyprctl eval \"" + batchCmds.join("; ") + "\"";
             let safeJson = JSON.stringify(jsonMonitorsArray).replace(/'/g, "'\\''");
             let jsonCmd = "jq '.monitors = " + safeJson + "' ~/.config/hypr/settings.json > ~/.config/hypr/settings.json.tmp && mv ~/.config/hypr/settings.json.tmp ~/.config/hypr/settings.json";
             let postReloadCmd = "swww kill ; sleep 0.2 ; swww-daemon &";

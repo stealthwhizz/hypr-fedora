@@ -1051,12 +1051,12 @@ Item {
             duration: 200
             easing.type: Easing.InQuart
         }
-        ScriptAction { 
+        ScriptAction {
             script: {
-                Quickshell.execDetached(["hyprctl", "dispatch", "submap", "reset"]);
+                Quickshell.execDetached(["hyprctl", "eval", "hl.dispatch(hl.dsp.submap('reset'))"]);
                 Quickshell.execDetached(["bash", Quickshell.env("HOME") + "/.config/hypr/scripts/qs_manager.sh", "close"]);
-            } 
-        }    
+            }
+        }
     }
 
     Component {
@@ -2605,8 +2605,8 @@ Item {
                                                 dynamicKeybindsModel.setProperty(outerIndex, "key", k);
                                             }
                                             onActiveFocusChanged: {
-                                                if (!activeFocus) { accumulatedMods = []; accumulatedKey = ""; Quickshell.execDetached(["hyprctl", "dispatch", "submap", "reset"]); }
-                                                else { Quickshell.execDetached(["hyprctl", "dispatch", "submap", "passthru"]); }
+                                                if (!activeFocus) { accumulatedMods = []; accumulatedKey = ""; Quickshell.execDetached(["hyprctl", "eval", "hl.dispatch(hl.dsp.submap('reset'))"]); }
+                                                else { Quickshell.execDetached(["hyprctl", "eval", "hl.dispatch(hl.dsp.submap('passthru'))"]); }
                                             }
                                         }
                                     }

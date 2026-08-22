@@ -227,7 +227,8 @@ Item {
             if (m.transform !== 0) monitorStr += ",transform," + m.transform;
             let jsonArr = [{ name: m.name, resW: m.resW, resH: m.resH, rate: parseInt(m.rate), x: 0, y: 0, scale: m.sysScale, transform: m.transform }];
             config.setSetting("monitors", jsonArr);
-            config.sh("hyprctl keyword monitor " + monitorStr + " ; swww kill ; sleep 0.2 ; swww-daemon &");
+            let monLua = "hl.monitor({ output = '" + m.name + "', mode = '" + m.resW + "x" + m.resH + "@" + m.rate + "', position = '0x0', scale = '" + m.sysScale + "'" + (m.transform !== 0 ? ", transform = " + m.transform : "") + " })";
+            config.sh("hyprctl eval \"" + monLua + "\" ; swww kill ; sleep 0.2 ; swww-daemon &");
             Quickshell.execDetached(["notify-send", "Display Update", "Applied: " + m.resW + "x" + m.resH + " @ " + m.rate + "Hz"]);
         } else {
             let rects = [];
@@ -272,12 +273,13 @@ Item {
                 r.y = Math.round(r.y - finalMinY);
                 let monitorStr = r.name + "," + r.resW + "x" + r.resH + "@" + r.rate + "," + r.x + "x" + r.y + "," + r.sysScale;
                 if (r.transform !== 0) monitorStr += ",transform," + r.transform;
-                batchCmds.push("keyword monitor " + monitorStr);
+                let monLua = "hl.monitor({ output = '" + r.name + "', mode = '" + r.resW + "x" + r.resH + "@" + r.rate + "', position = '" + r.x + "x" + r.y + "', scale = '" + r.sysScale + "'" + (r.transform !== 0 ? ", transform = " + r.transform : "") + " })";
+                batchCmds.push(monLua);
                 summaryString += r.name + " ";
                 jsonArr.push({ name: r.name, resW: r.resW, resH: r.resH, rate: parseInt(r.rate), x: r.x, y: r.y, scale: r.sysScale, transform: r.transform });
             }
             config.setSetting("monitors", jsonArr);
-            config.sh("hyprctl --batch '" + batchCmds.join(" ; ") + "' ; swww kill ; sleep 0.2 ; swww-daemon &");
+            config.sh("hyprctl eval \"" + batchCmds.join("; ") + "\" ; swww kill ; sleep 0.2 ; swww-daemon &");
             Quickshell.execDetached(["notify-send", "Display Update", "Applied layout for: " + summaryString.trim()]);
         }
     }
