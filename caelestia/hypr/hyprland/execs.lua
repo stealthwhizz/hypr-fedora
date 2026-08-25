@@ -23,6 +23,17 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("gsettings set org.gnome.desktop.interface cursor-theme " .. vars.cursorTheme)
     hl.exec_cmd("gsettings set org.gnome.desktop.interface cursor-size " .. vars.cursorSize)
 
+    -- Icon theme: upstream never sets this at all, and nothing else on this
+    -- system does either (unlike cursor-theme, which serpantinum already
+    -- established the gsettings pattern for). Without it, system-tray icons
+    -- resolved by name (not by the app's own bundled icon) fail to look up
+    -- anything and render as Qt's generic broken-icon placeholder - seen live
+    -- for the Discover/PackageKit update-checker's tray icon and its context
+    -- menu items. "breeze" is already installed as this KDE spin's default
+    -- icon theme (breeze-icon-theme package), so reuse it rather than add a
+    -- new dependency.
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface icon-theme breeze")
+
     -- Location provider and night light. Fedora's geoclue2 package installs
     -- to /usr/libexec, not /usr/lib like upstream's Arch path assumes.
     hl.exec_cmd("/usr/libexec/geoclue-2.0/demos/agent")

@@ -65,6 +65,12 @@ create_bind(vars.kbShowSidebar, hl.dsp.global("caelestia:sidebar"))
 create_bind(vars.kbClearNotifs, hl.dsp.global("caelestia:clearNotifs"), locked)
 create_bind(vars.kbShowPanels, hl.dsp.global("caelestia:showall"))
 create_bind(vars.kbLock, hl.dsp.global("caelestia:lock"))
+-- The shell ships a full settings panel (Nexus - includes a "Wallpaper &
+-- style" page) but upstream's own keybinds.lua never binds a key to open it
+-- at all (confirmed: the shell's Shortcuts.qml registers a "nexus" global
+-- shortcut, nothing in this file called it). SUPER + I was unused, matches
+-- the common "settings" convention.
+create_bind("SUPER + I", hl.dsp.global("caelestia:nexus"))
 
 -- Restore lock
 create_bind(vars.kbRestoreLock, function()
