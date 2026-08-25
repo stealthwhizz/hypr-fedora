@@ -33,6 +33,9 @@ caelestia-config/                # mirrors ~/.config/caelestia/ (separate from ~
 
 bin/
 └── display-switch                # reused verbatim from serpantinum/bin/display-switch — confirmed generic (autodetects eDP-*/LVDS* vs external via hyprctl monitors + jq, no shell-specific IPC)
+
+bash/
+└── pokefetch.sh                  # not part of caelestia-shell itself — fastfetch + a random pokemon (via pokemon-colorscripts) on every new terminal, sourced from ~/.bashrc by install.sh
 ```
 
 ## Dependencies
@@ -46,6 +49,8 @@ bin/
 **VSCodium** (editor): not in any Fedora repo or the COPRs above — `install.sh` adds VSCodium's own official repo (`download.vscodium.com`, GPG-verified) and installs from there.
 
 **Already installed / assumed present**: `hyprpicker`, `fuzzel`, `geoclue2`, `wireplumber`/`wpctl`, `cliphist`, `wl-clipboard` — all confirmed present on this machine already (from prior serpantinum/base setup work).
+
+**Optional, for `bash/pokefetch.sh`**: `fastfetch` (plain Fedora repo) and [`pokemon-colorscripts`](https://gitlab.com/phoneybadger/pokemon-colorscripts) (installs from source via its own `install.sh`, not packaged for Fedora). `install.sh` only wires up the auto-run-on-terminal-open hook if both are already on `PATH` — otherwise it's skipped silently, no hard dependency.
 
 ## Notable fixes/decisions
 

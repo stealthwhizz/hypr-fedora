@@ -61,6 +61,15 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     echo "WARNING: $BIN_DIR is not on your PATH. Add it in your shell config."
 fi
 
+echo "==> Wiring up pokefetch (fastfetch + a random pokemon on new terminals)"
+if command -v fastfetch >/dev/null 2>&1 && command -v pokemon-colorscripts >/dev/null 2>&1; then
+    if ! grep -q "caelestia/bash/pokefetch.sh" "$HOME/.bashrc" 2>/dev/null; then
+        printf '\n# pokefetch (see hypr-fedora/caelestia/bash/pokefetch.sh)\nsource "%s/bash/pokefetch.sh"\n' "$REPO_DIR" >> "$HOME/.bashrc"
+    fi
+else
+    echo "fastfetch and/or pokemon-colorscripts not installed — skipping. See caelestia/README.md."
+fi
+
 echo "==> Enabling hyprpolkitagent"
 systemctl --user enable --now hyprpolkitagent 2>&1 || \
     echo "WARNING: couldn't enable hyprpolkitagent now — will start on next login."
