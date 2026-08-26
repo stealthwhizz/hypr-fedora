@@ -14,6 +14,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HYPR_DIR="$HOME/.config/hypr"
 CAELESTIA_CONFIG_DIR="$HOME/.config/caelestia"
 BIN_DIR="$HOME/.local/bin"
+SHELL_DIR="/etc/xdg/quickshell/caelestia"
 BACKUP_DIR="$HOME/hypr-fedora-preinstall-backup-$(date +%Y%m%d-%H%M%S)"
 
 if ! command -v caelestia >/dev/null 2>&1; then
@@ -77,6 +78,13 @@ echo "==> Installing xwaylandvideobridge autostart override (Hyprland sessions o
 mkdir -p "$HOME/.config/autostart"
 cp "$REPO_DIR/autostart/org.kde.xwaylandvideobridge.desktop" \
     "$HOME/.config/autostart/org.kde.xwaylandvideobridge.desktop"
+
+echo "==> Applying shell-patches/ onto the caelestia-shell package (needs sudo)"
+if [ -d "$SHELL_DIR" ]; then
+    sudo cp -r "$REPO_DIR/shell-patches/." "$SHELL_DIR/"
+else
+    echo "WARNING: $SHELL_DIR not found — is caelestia-shell installed? Skipping patches."
+fi
 
 echo "==> Enabling hyprpolkitagent"
 systemctl --user enable --now hyprpolkitagent 2>&1 || \
