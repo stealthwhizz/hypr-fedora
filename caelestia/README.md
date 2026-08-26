@@ -32,10 +32,14 @@ caelestia-config/                # mirrors ~/.config/caelestia/ (separate from ~
 └── (shell.json intentionally not committed — see Known limitations)
 
 bin/
-└── display-switch                # reused verbatim from serpantinum/bin/display-switch — confirmed generic (autodetects eDP-*/LVDS* vs external via hyprctl monitors + jq, no shell-specific IPC)
+├── display-switch                # reused verbatim from serpantinum/bin/display-switch — confirmed generic (autodetects eDP-*/LVDS* vs external via hyprctl monitors + jq, no shell-specific IPC)
+└── fix-dart-sass.sh              # installs a working dart-sass into ~/.local, see Notable fixes below
 
 bash/
 └── pokefetch.sh                  # not part of caelestia-shell itself — fastfetch + a random pokemon (via pokemon-colorscripts) on every new terminal, sourced from ~/.bashrc by install.sh
+
+autostart/
+└── org.kde.xwaylandvideobridge.desktop   # per-user override, NotShowIn=Hyprland — see Notable fixes below
 ```
 
 ## Dependencies
@@ -54,6 +58,8 @@ bash/
 
 ## Notable fixes/decisions
 
+- **`dart-sass` (a coprdep of `celestelove/caelestia`, itself a "local build" not from Fedora) is broken.** `/usr/bin/sass` is the bare Dart VM binary, not the real dart-sass wrapper+snapshot — confirmed via `sass --help` printing raw Dart VM usage text instead of sass's actual CLI help. Every `caelestia scheme set` call fails its `apply_discord()` step as a result (`sass -I <path> <file>` gets misinterpreted as "`-I` is not an AOT snapshot"), on **every** scheme, not just some — this is what made color-scheme switching look broken/inconsistent. Fixed by `bin/fix-dart-sass.sh`, which installs the real, official dart-sass release from `sass/dart-sass`'s GitHub releases into `~/.local` (no sudo — `~/.local/bin` already outranks `/usr/bin` in `PATH`), shadowing the broken package without fighting it. **Verified live**: all 14 named schemes + `dynamic` switch cleanly with zero errors after this fix.
+- **`xwaylandvideobridge` (KDE's screen-share helper for X11 apps) has no `OnlyShowIn=KDE` in its system autostart entry**, so it launches in Hyprland sessions too even though it's Plasma-specific — and since it's `NoDisplay=true` (never meant to be seen directly) but still maps a real window, under KWin it's specially hidden from view while Hyprland just tiles it like any normal app, looking exactly like an empty terminal you never opened. It genuinely needs to keep running for screen-sharing to work, so an earlier attempt at auto-closing it on open was wrong — that would've broken screen-sharing entirely. Fixed properly instead with a per-user XDG autostart override (`autostart/org.kde.xwaylandvideobridge.desktop`, `NotShowIn=Hyprland;`) — doesn't auto-start in Hyprland, still autostarts normally under Plasma, and if you ever start it manually in Hyprland for screen-sharing it behaves as a completely normal window (closes on `Super+Q` like anything else). **Verified live**: killed the running instance, confirmed the override installs cleanly; the "doesn't autostart in Hyprland" half specifically needs a fresh login to re-verify (autostart decisions are made at session-start time via `start-hyprland`, not retroactively).
 - **Keyring — same bug serpantinum already diagnosed on this exact OS+session stack.** Upstream's `execs.lua` just runs `gnome-keyring-daemon --start --components=secrets`. On this machine, PAM (`pam_gnome_keyring.so`, wired into `/etc/pam.d/sddm` — this machine's login manager is `plasmalogin`, an SDDM derivative, not GDM as serpantinum's own comments originally assumed) already unlocks a keyring at login, but Hyprland's process never inherits its env vars, so a second blind keyring spawns and forces an interactive prompt. Fixed by porting `serpantinum/hypr/scripts/keyring_init.sh` over and calling that instead — same root cause, same fix, not yet re-verified live in this specific shell (**Unverified** until first-boot testing, see below).
 - **Polkit agent path doesn't exist on Fedora.** Upstream execs `/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1` — confirmed via `dnf repoquery polkit-gnome` across every enabled repo (including all COPRs on this machine) that this package genuinely doesn't exist for Fedora. Removed that line; `install.sh` instead does `systemctl --user enable --now hyprpolkitagent`, the same fix already proven working for serpantinum on this machine. **Unverified** in this shell specifically until tested.
 - **Geoclue path.** Upstream execs `/usr/lib/geoclue-2.0/demos/agent` — Fedora's `geoclue2` package installs to `/usr/libexec`, not `/usr/lib`. Confirmed via `rpm -ql geoclue2` that `/usr/libexec/geoclue-2.0/demos/agent` is the real path. One-line fix, not yet tested live.

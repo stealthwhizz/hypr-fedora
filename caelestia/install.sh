@@ -70,6 +70,14 @@ else
     echo "fastfetch and/or pokemon-colorscripts not installed — skipping. See caelestia/README.md."
 fi
 
+echo "==> Fixing dart-sass if the celestelove/caelestia COPR's build is broken"
+"$REPO_DIR/bin/fix-dart-sass.sh"
+
+echo "==> Installing xwaylandvideobridge autostart override (Hyprland sessions only)"
+mkdir -p "$HOME/.config/autostart"
+cp "$REPO_DIR/autostart/org.kde.xwaylandvideobridge.desktop" \
+    "$HOME/.config/autostart/org.kde.xwaylandvideobridge.desktop"
+
 echo "==> Enabling hyprpolkitagent"
 systemctl --user enable --now hyprpolkitagent 2>&1 || \
     echo "WARNING: couldn't enable hyprpolkitagent now — will start on next login."

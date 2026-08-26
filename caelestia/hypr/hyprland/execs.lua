@@ -65,3 +65,16 @@ end
 
 hl.on("window.title", apply_resizer_rules)
 hl.on("window.open", apply_resizer_rules)
+
+-- Note on xwaylandvideobridge (KDE's screen-share helper for X11 apps): it
+-- used to auto-close itself here on open, which would have broken screen
+-- sharing entirely - it needs to actually keep running for that to work.
+-- Under KWin it's specially hidden from view; Hyprland has no such
+-- special-casing so it just tiles it like a normal window (looks like a
+-- blank terminal you never opened). Fixed properly instead by preventing it
+-- from auto-starting in Hyprland sessions specifically at the XDG autostart
+-- level (see ~/.config/autostart/org.kde.xwaylandvideobridge.desktop,
+-- NotShowIn=Hyprland - Plasma sessions are untouched, still autostart it
+-- normally there). If you ever start it manually while in Hyprland for
+-- screen-sharing, it now behaves as a completely normal window - closes on
+-- Super+Q like anything else, no special handling here at all.
