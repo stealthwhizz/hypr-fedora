@@ -102,6 +102,13 @@ echo "==> Enabling hyprpolkitagent"
 systemctl --user enable --now hyprpolkitagent 2>&1 || \
     echo "WARNING: couldn't enable hyprpolkitagent now — will start on next login."
 
+echo "==> Installing xdg-desktop-portal.service override (drops the Requisite=graphical-session.target that permanently blocks it under plain Hyprland — see execs.lua)"
+mkdir -p "$HOME/.config/systemd/user"
+cp "$REPO_DIR/systemd-user-overrides/xdg-desktop-portal.service" "$HOME/.config/systemd/user/xdg-desktop-portal.service"
+systemctl --user daemon-reload
+systemctl --user start xdg-desktop-portal.service 2>&1 || \
+    echo "WARNING: couldn't start xdg-desktop-portal now — execs.lua will retry on next Hyprland login."
+
 echo "==> Reloading Hyprland (if running)"
 if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
     hyprctl reload

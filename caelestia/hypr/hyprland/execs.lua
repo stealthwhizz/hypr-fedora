@@ -24,6 +24,21 @@ hl.on("hyprland.start", function()
     -- install.sh's one-time `enable --now`.
     hl.exec_cmd("systemctl --user start hyprpolkitagent.service")
 
+    -- Same graphical-session.target problem, worse: xdg-desktop-portal.service
+    -- has Requisite=graphical-session.target (a HARD gate, not just
+    -- WantedBy=) - it refuses to even attempt starting unless that target is
+    -- already active, which it never is here. Confirmed live: this broke
+    -- apps' "System" dark/light theme detection (org.freedesktop.appearance
+    -- color-scheme queries via the portal returned nothing - "Could not
+    -- activate remote peer" - so Brave/Zed/anything using System theme mode
+    -- silently stayed light no matter what GTK/KDE/caelestia's own scheme
+    -- were set to). Unlike hyprpolkitagent, a plain `systemctl --user start`
+    -- doesn't work around Requisite= at all - had to fully override the
+    -- unit (see systemd-user-overrides/xdg-desktop-portal.service, installed
+    -- to ~/.config/systemd/user/ by install.sh, dropping the Requisite=
+    -- line entirely) before this start actually succeeds.
+    hl.exec_cmd("systemctl --user start xdg-desktop-portal.service")
+
     -- Clipboard history
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")

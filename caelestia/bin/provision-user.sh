@@ -86,6 +86,10 @@ else
     echo "WARNING: $GPU_CONF_SRC not found — copy it manually if this machine has the hybrid-GPU crash issue."
 fi
 
+echo "==> Installing xdg-desktop-portal.service override (drops the Requisite=graphical-session.target that permanently blocks it under plain Hyprland — see hypr/hyprland/execs.lua)"
+mkdir -p "$TARGET_HOME/.config/systemd/user"
+cp "$REPO_DIR/systemd-user-overrides/xdg-desktop-portal.service" "$TARGET_HOME/.config/systemd/user/xdg-desktop-portal.service"
+
 echo "==> Applying shell-patches/ onto the caelestia-shell package (already applied system-wide, skipping — it's not per-user)"
 
 echo "==> Fixing ownership"
@@ -98,6 +102,7 @@ chown -R "$TARGET:$TARGET" \
     "$TARGET_HOME/.config/autostart" \
     "$TARGET_HOME/.config/environment.d" \
     "$TARGET_HOME/.config/kdeglobals" \
+    "$TARGET_HOME/.config/systemd" \
     "$TARGET_HOME/.bashrc" \
     "$BACKUP_DIR" \
     2>/dev/null || true
