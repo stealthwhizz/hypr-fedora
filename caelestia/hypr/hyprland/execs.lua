@@ -10,6 +10,19 @@ hl.on("hyprland.start", function()
     -- no package ships /usr/lib/polkit-gnome anywhere). Using hyprpolkitagent
     -- instead (systemd user service, enabled by install.sh) rather than a raw
     -- exec_cmd line here, matching the serpantinum port's proven approach.
+    --
+    -- BUT: hyprpolkitagent.service has WantedBy=graphical-session.target,
+    -- and plain (non-UWSM) Hyprland never activates that target at all -
+    -- confirmed live: the service was correctly "enabled" from install.sh
+    -- but sat "inactive (dead)" for the whole session regardless, meaning
+    -- every admin-authorization prompt (mounting drives, creating users,
+    -- anything needing polkit) silently had no agent to show it at all.
+    -- graphical-session.target itself refuses manual start ("may be
+    -- requested by dependency only" - only a real session manager like
+    -- UWSM is meant to trigger it), so start the actual service directly
+    -- instead, every time Hyprland starts, rather than relying on
+    -- install.sh's one-time `enable --now`.
+    hl.exec_cmd("systemctl --user start hyprpolkitagent.service")
 
     -- Clipboard history
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
