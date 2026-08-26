@@ -2,4 +2,9 @@
 Name=Breeze (full fallback)
 Comment=Breeze with an extended inheritance chain (breeze-dark, Adwaita, AdwaitaLegacy, hicolor) so icons breeze itself doesn't ship still resolve
 Inherits=breeze,breeze-dark,Adwaita,AdwaitaLegacy,hicolor
-Directories=
+Directories=16x16/apps
+
+[16x16/apps]
+Size=16
+Context=Applications
+Type=Fixed
