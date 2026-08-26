@@ -10,7 +10,11 @@ return {
     -- matching the ii/ and serpantinum/ ports' existing convention.
     terminal                   = "kitty",
     browser                    = "firefox",
-    editor                     = "codium",
+    -- VSCodium replaced with real VS Code (Microsoft's official build, via
+    -- their own repo) as the shared default across all accounts on this
+    -- machine - the admin user overrides this to "zed" in their own
+    -- ~/.config/caelestia/hypr-vars.lua instead, per-account preference.
+    editor                     = "code",
     fileExplorer               = "nautilus",
     -- pwvucontrol has no available Fedora package or trustworthy COPR found -
     -- substituting pavucontrol (plain Fedora repo, same purpose: a PipeWire

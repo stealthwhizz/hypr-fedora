@@ -33,7 +33,8 @@ caelestia-config/                # mirrors ~/.config/caelestia/ (separate from ~
 
 bin/
 ├── display-switch                # reused verbatim from serpantinum/bin/display-switch — confirmed generic (autodetects eDP-*/LVDS* vs external via hyprctl monitors + jq, no shell-specific IPC)
-└── fix-dart-sass.sh              # installs a working dart-sass into ~/.local, see Notable fixes below
+├── fix-dart-sass.sh              # installs a working dart-sass into ~/.local, see Notable fixes below
+└── provision-user.sh             # for pushing this whole setup into ANOTHER user's home directory as admin (sudo ./provision-user.sh <username>) — for accounts without their own sudo/wheel access, who can't run install.sh themselves. Handles everything per-user install.sh does except system packages (already shared machine-wide once installed).
 
 bash/
 └── pokefetch.sh                  # not part of caelestia-shell itself — fastfetch + a random pokemon (via pokemon-colorscripts) on every new terminal, sourced from ~/.bashrc by install.sh
@@ -70,7 +71,7 @@ applications/                     # local overrides (~/.local/share/applications
 
 **Plain Fedora repo** (installed by `install.sh`): `gnome-keyring`, `gammastep`, `trash-cli`, `hyprpolkitagent`, `pavucontrol`, `ydotool`.
 
-**VSCodium** (editor): not in any Fedora repo or the COPRs above — `install.sh` adds VSCodium's own official repo (`download.vscodium.com`, GPG-verified) and installs from there.
+**VS Code** (editor, shared default): not in any Fedora repo or the COPRs above — `install.sh` adds Microsoft's official repo (`packages.microsoft.com`, GPG-verified) and installs from there. Originally VSCodium; replaced since this is a multi-account machine and the other two accounts specifically want VS Code (Marketplace access) over VSCodium. The admin account overrides this back to **Zed** (installed per-user via `curl -f https://zed.dev/install.sh | sh`, to `~/.local` — not a system package, only present for accounts that ran that installer) through its own `~/.config/caelestia/hypr-vars.lua` — see `variables.lua`'s `editor` field and its comment for how the per-account split works.
 
 **Already installed / assumed present**: `hyprpicker`, `fuzzel`, `geoclue2`, `wireplumber`/`wpctl`, `cliphist`, `wl-clipboard` — all confirmed present on this machine already (from prior serpantinum/base setup work).
 
