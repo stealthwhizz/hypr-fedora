@@ -59,6 +59,10 @@ cp "$REPO_DIR/icons/breeze-full/index.theme" "$HOME/.local/share/icons/breeze-fu
 kwriteconfig6 --file kdeglobals --group Icons --key Theme breeze-full 2>/dev/null || \
     echo "WARNING: kwriteconfig6 not found — set kdeglobals [Icons] Theme=breeze-full manually."
 
+echo "==> Installing System Settings desktop-entry overrides (hardcoded icon path — sidesteps the flaky icon-theme lookup entirely for these two)"
+mkdir -p "$HOME/.local/share/applications"
+cp "$REPO_DIR/applications/"*.desktop "$HOME/.local/share/applications/"
+
 echo "==> Installing bin/display-switch"
 mkdir -p "$BIN_DIR"
 cp "$REPO_DIR/bin/display-switch" "$BIN_DIR/display-switch"
