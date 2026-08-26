@@ -1,0 +1,5 @@
+[Icon Theme]
+Name=Breeze (full fallback)
+Comment=Breeze with an extended inheritance chain (breeze-dark, Adwaita, AdwaitaLegacy, hicolor) so icons breeze itself doesn't ship still resolve
+Inherits=breeze,breeze-dark,Adwaita,AdwaitaLegacy,hicolor
+Directories=

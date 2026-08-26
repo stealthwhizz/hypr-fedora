@@ -24,15 +24,27 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("gsettings set org.gnome.desktop.interface cursor-size " .. vars.cursorSize)
 
     -- Icon theme: upstream never sets this at all, and nothing else on this
-    -- system does either (unlike cursor-theme, which serpantinum already
-    -- established the gsettings pattern for). Without it, system-tray icons
-    -- resolved by name (not by the app's own bundled icon) fail to look up
-    -- anything and render as Qt's generic broken-icon placeholder - seen live
-    -- for the Discover/PackageKit update-checker's tray icon and its context
-    -- menu items. "breeze" is already installed as this KDE spin's default
-    -- icon theme (breeze-icon-theme package), so reuse it rather than add a
-    -- new dependency.
-    hl.exec_cmd("gsettings set org.gnome.desktop.interface icon-theme breeze")
+    -- system does either. Without it, icons resolved by name (not an app's
+    -- own bundled icon) fail to load - seen live for both system-tray icons
+    -- (Discover/PackageKit's update-checker) and launcher action items
+    -- (preferences-system, tools-report-bug, etc, all rendering as Qt's
+    -- generic broken-icon placeholder every time the launcher opened).
+    --
+    -- gsettings alone (org.gnome.desktop.interface icon-theme) does NOT
+    -- control this for this shell - confirmed live, changing it had zero
+    -- effect. The real control point is kdeglobals' [Icons] Theme= key,
+    -- read by KDEPlasmaPlatformTheme6 (the actual active Qt platform theme -
+    -- QT_QPA_PLATFORMTHEME is set to "qtengine" below, which doesn't exist
+    -- as an installed plugin at all, so Qt silently falls back to this one).
+    --
+    -- Plain "breeze" alone isn't enough either: several action icons only
+    -- exist in breeze-dark or AdwaitaLegacy, and breeze's own Inherits=
+    -- chain is just "hicolor" (near-empty) - doesn't pull those in. Using a
+    -- small local meta-theme (~/.local/share/icons/breeze-full, seeded by
+    -- install.sh from icons/breeze-full/ in this repo) that inherits from
+    -- breeze, breeze-dark, Adwaita, AdwaitaLegacy, and hicolor in one chain.
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface icon-theme breeze-full")
+    hl.exec_cmd("kwriteconfig6 --file kdeglobals --group Icons --key Theme breeze-full")
 
     -- Location provider and night light. Fedora's geoclue2 package installs
     -- to /usr/libexec, not /usr/lib like upstream's Arch path assumes.

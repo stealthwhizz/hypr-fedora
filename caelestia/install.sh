@@ -53,6 +53,12 @@ echo "==> Installing caelestia's own runtime config (~/.config/caelestia)"
 mkdir -p "$CAELESTIA_CONFIG_DIR"
 cp -n "$REPO_DIR/caelestia-config/"* "$CAELESTIA_CONFIG_DIR/" 2>/dev/null || true
 
+echo "==> Installing the breeze-full meta icon theme (~/.local/share/icons)"
+mkdir -p "$HOME/.local/share/icons/breeze-full"
+cp "$REPO_DIR/icons/breeze-full/index.theme" "$HOME/.local/share/icons/breeze-full/index.theme"
+kwriteconfig6 --file kdeglobals --group Icons --key Theme breeze-full 2>/dev/null || \
+    echo "WARNING: kwriteconfig6 not found — set kdeglobals [Icons] Theme=breeze-full manually."
+
 echo "==> Installing bin/display-switch"
 mkdir -p "$BIN_DIR"
 cp "$REPO_DIR/bin/display-switch" "$BIN_DIR/display-switch"
