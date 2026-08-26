@@ -46,9 +46,20 @@ shell-patches/
 
 icons/breeze-full/index.theme   # small local meta icon theme (seeded to ~/.local/share/icons by install.sh) — see Notable fixes below
 
-applications/
-├── systemsettings.desktop        # local override (~/.local/share/applications), Icon= hardcoded to an absolute file path — see Notable fixes below
-└── kdesystemsettings.desktop     # same
+applications/                     # local overrides (~/.local/share/applications), Icon= hardcoded to an absolute file path on every one — see Notable fixes below
+├── systemsettings.desktop
+├── kdesystemsettings.desktop
+├── org.kde.khelpcenter.desktop
+├── org.kde.kinfocenter.desktop
+├── org.kde.kcalc.desktop
+├── org.kde.kjournaldbrowser.desktop
+├── org.kde.kcharselect.desktop
+├── org.kde.plasma-systemmonitor.desktop
+├── org.kde.plasma.emojier.desktop
+├── org.kde.kdebugsettings.desktop
+├── org.kde.drkonqi.desktop
+├── org.kde.drkonqi.coredump.gui.desktop
+└── org.kde.kwin.killer.desktop
 ```
 
 ## Dependencies
@@ -79,7 +90,7 @@ applications/
 - **`QT_QPA_PLATFORMTHEME = "qtengine"`** (in `env.lua`, unchanged): `qtengine` is an AUR-only Qt theming engine with no Fedora equivalent found. Left as-is rather than guessing a substitute — Qt apps will just fall back to default Qt styling instead of caelestia's intended theme. Cosmetic only, not fixed — see Known limitations.
 - **Icon theme was never set at all, and the first fix attempt (`gsettings icon-theme breeze`) turned out to have zero effect.** Upstream sets a cursor theme via `gsettings` but never an icon theme. Symptom seen live twice: system-tray icons (Discover/PackageKit's update-checker) rendering as Qt's generic broken-icon placeholder, and — worse — the *same* placeholder on 6 specific launcher action-item icons (`preferences-system`, `tools-report-bug`, `preferences-desktop-emoticons`, `utilities-system-monitor`, `accessories-character-map`, `debug-run`) every single time the launcher opened, plus the "System Settings" app entries in the launcher's app list. The `gsettings` fix genuinely didn't help at all — confirmed by triggering the launcher via IPC after applying it and seeing the exact same errors in the shell's log. Root cause found via kdeglobals: `QT_QPA_PLATFORMTHEME` is set to `"qtengine"` (an AUR-only theme engine, already documented above as unavailable on Fedora), which silently fails to load, so Qt falls back to `KDEPlasmaPlatformTheme6` — which reads icon theme from **`kdeglobals`'s `[Icons]` `Theme=` key, not `gsettings` at all**, and that key didn't exist. On top of that, plain `breeze` alone wouldn't have been enough anyway: several of the failing icons only exist in `breeze-dark` or `AdwaitaLegacy`, and breeze's own `Inherits=` chain is just `hicolor` (near-empty) — doesn't pull those in. Set via `kwriteconfig6 --file kdeglobals --group Icons --key Theme breeze-full` (kept the `gsettings` line too, for whatever GTK-side lookups it does still matter for). A *second* real bug surfaced right after this looked "fixed": `kreadconfig6 --file kdeglobals --group Icons --key Theme` correctly returned `breeze-full`, yet the exact same icon-load errors kept happening — turned out the meta-theme's first version had an empty `Directories=` key (pure-inheritance, no icons of its own), which Qt's icon-theme loader silently treats as malformed and falls back away from, regardless of what `kdeglobals` says. Fixed by giving it one minimal real directory entry (`16x16/apps`, no icon files needed in it — just a spec-valid `Directories=` list) so the theme itself parses as valid; inheritance still does all the actual work. **Verified live** (properly this time — got the exact log file via `lsof -p <pid>` instead of guessing by mtime, since an earlier "verified" pass had actually checked a stale log from a dead instance): triggered the launcher via IPC, zero icon-load errors, confirmed against the real running PID.
 
-- **The kdeglobals fix, while correct, turned out to be inherently fragile — KDE System Settings' own "Global Theme" page rewrites `kdeglobals` wholesale when opened, wiping `[Icons]` entirely (see Known limitations below).** Rather than keep chasing that mid-session recurrence, gave up on theme-name resolution for the two icons users actually notice most (`System Settings` and `KDE System Settings` in the launcher's app list) and just hardcoded them instead: `applications/systemsettings.desktop` and `applications/kdesystemsettings.desktop` are local desktop-entry overrides (`~/.local/share/applications`, standard XDG precedence over `/usr/share/applications`) with `Icon=` pointed at an absolute file path (`/usr/share/icons/breeze/apps/48/preferences-system.svg`) instead of the bare theme-relative name `preferences-system`. An absolute path bypasses icon-theme lookup entirely, so this can't be broken by a future Global Theme reset the way the theme-name approach can. **Verified live**: `preferences-system` no longer appears anywhere in the shell's icon-load error log after this, even though other unfixed action icons (e.g. `tools-report-bug`) still do — same technique could be applied to those too if they turn out to matter.
+- **The kdeglobals fix, while correct, turned out to be inherently fragile — KDE System Settings' own "Global Theme" page rewrites `kdeglobals` wholesale when opened, wiping `[Icons]` entirely (see Known limitations below) — and even when `kdeglobals` was correctly set, several more icons kept failing anyway.** Gave up on theme-name resolution entirely for individual app icons users actually see in the launcher's app list, and hardcoded all of them instead: `applications/*.desktop` are local desktop-entry overrides (`~/.local/share/applications`, standard XDG precedence over `/usr/share/applications`) with `Icon=` pointed at an absolute file path instead of a bare theme-relative name. An absolute path bypasses icon-theme lookup entirely, so none of these can be broken by a future Global Theme reset the way the theme-name approach can. Covers: System Settings (both entries), Help Center, Info Center, Calculator, Log Viewer, Character Select, System Monitor, Emoji Selector, Debug Settings, and the three crash-reporter tools (drkonqi ×2, kwin killer) that all happened to share one broken icon name. **Verified live**: triggered the launcher via IPC and diffed the complete set of unique failing icon names before and after (`grep -oP 'Could not load icon "\K[^"?]+' | sort -u`) against the actual running PID's log (via `lsof -p <pid>`, not a guess) — zero failures remain.
 
 ## Known limitations
 
