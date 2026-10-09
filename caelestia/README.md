@@ -22,12 +22,13 @@ hypr/
 ├── hyprland/
 │   ├── env.lua                 # unchanged (upstream already sets XDG_CURRENT_DESKTOP/etc via hl.env correctly)
 │   ├── execs.lua                # ADAPTED — see Notable fixes below
-│   ├── general.lua, input.lua, misc.lua, animations.lua, decoration.lua, group.lua, gestures.lua, rules.lua, keybinds.lua   # unchanged
+│   ├── general.lua, input.lua, misc.lua, animations.lua, decoration.lua, group.lua, gestures.lua, rules.lua   # unchanged
+│   ├── keybinds.lua             # ADAPTED: Alt+Tab = last-used window + raise to top; Alt+Shift+Tab = cycle every window + raise (upstream's plain cycle_next left floating windows buried). See "Window management" below
 │   └── scripts/keyring_init.sh  # ported from serpantinum/hypr/scripts/keyring_init.sh
 └── utils/                      # helper Lua required by hyprland/*.lua, copied as-is
 
 caelestia-config/                # mirrors ~/.config/caelestia/ (separate from ~/.config/hypr/)
-├── hypr-vars.lua                # empty override seed (upstream's own mechanism, "return {}")
+├── hypr-vars.lua                # override seed: windowBorderSize = 3 (upstream default 1)
 ├── hypr-user.lua                # empty override seed (upstream's own mechanism)
 └── (shell.json intentionally not committed — see Known limitations)
 
@@ -98,6 +99,25 @@ applications/                     # local overrides (~/.local/share/applications
 - **Icon theme was never set at all, and the first fix attempt (`gsettings icon-theme breeze`) turned out to have zero effect.** Upstream sets a cursor theme via `gsettings` but never an icon theme. Symptom seen live twice: system-tray icons (Discover/PackageKit's update-checker) rendering as Qt's generic broken-icon placeholder, and — worse — the *same* placeholder on 6 specific launcher action-item icons (`preferences-system`, `tools-report-bug`, `preferences-desktop-emoticons`, `utilities-system-monitor`, `accessories-character-map`, `debug-run`) every single time the launcher opened, plus the "System Settings" app entries in the launcher's app list. The `gsettings` fix genuinely didn't help at all — confirmed by triggering the launcher via IPC after applying it and seeing the exact same errors in the shell's log. Root cause found via kdeglobals: `QT_QPA_PLATFORMTHEME` is set to `"qtengine"` (an AUR-only theme engine, already documented above as unavailable on Fedora), which silently fails to load, so Qt falls back to `KDEPlasmaPlatformTheme6` — which reads icon theme from **`kdeglobals`'s `[Icons]` `Theme=` key, not `gsettings` at all**, and that key didn't exist. On top of that, plain `breeze` alone wouldn't have been enough anyway: several of the failing icons only exist in `breeze-dark` or `AdwaitaLegacy`, and breeze's own `Inherits=` chain is just `hicolor` (near-empty) — doesn't pull those in. Set via `kwriteconfig6 --file kdeglobals --group Icons --key Theme breeze-full` (kept the `gsettings` line too, for whatever GTK-side lookups it does still matter for). A *second* real bug surfaced right after this looked "fixed": `kreadconfig6 --file kdeglobals --group Icons --key Theme` correctly returned `breeze-full`, yet the exact same icon-load errors kept happening — turned out the meta-theme's first version had an empty `Directories=` key (pure-inheritance, no icons of its own), which Qt's icon-theme loader silently treats as malformed and falls back away from, regardless of what `kdeglobals` says. Fixed by giving it one minimal real directory entry (`16x16/apps`, no icon files needed in it — just a spec-valid `Directories=` list) so the theme itself parses as valid; inheritance still does all the actual work. **Verified live** (properly this time — got the exact log file via `lsof -p <pid>` instead of guessing by mtime, since an earlier "verified" pass had actually checked a stale log from a dead instance): triggered the launcher via IPC, zero icon-load errors, confirmed against the real running PID.
 
 - **The kdeglobals fix, while correct, turned out to be inherently fragile — KDE System Settings' own "Global Theme" page rewrites `kdeglobals` wholesale when opened, wiping `[Icons]` entirely (see Known limitations below) — and even when `kdeglobals` was correctly set, several more icons kept failing anyway.** Gave up on theme-name resolution entirely for individual app icons users actually see in the launcher's app list, and hardcoded all of them instead: `applications/*.desktop` are local desktop-entry overrides (`~/.local/share/applications`, standard XDG precedence over `/usr/share/applications`) with `Icon=` pointed at an absolute file path instead of a bare theme-relative name. An absolute path bypasses icon-theme lookup entirely, so none of these can be broken by a future Global Theme reset the way the theme-name approach can. Covers: System Settings (both entries), Help Center, Info Center, Calculator, Log Viewer, Character Select, System Monitor, Emoji Selector, Debug Settings, and the three crash-reporter tools (drkonqi ×2, kwin killer) that all happened to share one broken icon name. **Verified live**: triggered the launcher via IPC and diffed the complete set of unique failing icon names before and after (`grep -oP 'Could not load icon "\K[^"?]+' | sort -u`) against the actual running PID's log (via `lsof -p <pid>`, not a guess) — zero failures remain.
+
+## Window management
+
+Windows **tile by default** (dwindle). Free placement is on demand:
+
+| Action | Keys |
+|---|---|
+| Move a window (drag) | `Super` + left mouse drag, or `Super+Z` + mouse |
+| Resize | `Super` + right mouse drag, or `Super+X` + mouse |
+| Toggle one window tiled ⇄ floating (free placement) | `Super+Alt+Space` |
+| Center a floating window | `Ctrl+Super+\` |
+| Move / focus in a direction | `Super+Shift+←↑→↓` / `Super+←↑→↓` |
+| Alt+Tab: last-used window, raised to top (press again to go back) | `Alt+Tab` |
+| Step through every window on the workspace, raised to top | `Alt+Shift+Tab` |
+| Cycle tabs inside a group | `Ctrl+Alt+Tab` |
+
+`keybinds.lua` is ADAPTED for Alt+Tab: upstream's plain `cycle_next` focused the next window but never raised it, so floating windows stayed buried under the one you switched away from. The binds now follow the focus change with `alter_zorder({ mode = "top" })`.
+
+`bootstrap.sh --float-all` flips the default to floating every window (adds a window rule to `~/.config/caelestia/hypr-user.lua`).
 
 ## Known limitations
 

@@ -4,13 +4,14 @@
 # Does everything install.sh assumes is already done:
 #   1. enables the third-party COPRs (asks first)
 #   2. installs hyprland + caelestia-shell + caelestia-cli
-#   3. seeds ~/.config/caelestia/hypr-user.lua with a "float every window" rule
+#   3. (only with --float-all) seeds ~/.config/caelestia/hypr-user.lua with a
+#      "float every window" rule. Default is tiling; Super+Alt+Space floats one window.
 #   4. copies ../wallpapers/*.{jpg,jpeg,png} into ~/Pictures/Wallpapers
 #      (caelestia's picker scans that folder; existing files are not overwritten)
 #   5. runs ./install.sh (backs up existing config, copies the Lua config in)
 #
-# Usage:  ./bootstrap.sh [--no-float] [--no-wallpapers] [-y]
-#   --no-float       keep Hyprland's default tiling (skip step 3)
+# Usage:  ./bootstrap.sh [--float-all] [--no-wallpapers] [-y]
+#   --float-all      float every window instead of tiling (step 3)
 #   --no-wallpapers  don't copy the wallpaper set (skip step 4)
 #   -y               don't prompt before enabling COPRs
 #
@@ -25,16 +26,16 @@ COPRS=(
     celestelove/caelestia            # caelestia-shell + caelestia-cli
     errornointernet/quickshell       # quickshell-git (caelestia dep)
 )
-FLOAT=1
+FLOAT=0
 ASSUME_YES=0
 WALLPAPERS=1
 
 for arg in "$@"; do
     case "$arg" in
-        --no-float) FLOAT=0 ;;
+        --float-all) FLOAT=1 ;;
         --no-wallpapers) WALLPAPERS=0 ;;
         -y|--yes)   ASSUME_YES=1 ;;
-        -h|--help)  sed -n '2,18p' "${BASH_SOURCE[0]}"; exit 0 ;;
+        -h|--help)  sed -n '2,19p' "${BASH_SOURCE[0]}"; exit 0 ;;
         *) echo "unknown option: $arg" >&2; exit 2 ;;
     esac
 done
@@ -81,7 +82,7 @@ if [ "$FLOAT" -eq 1 ]; then
 -- bootstrap.sh: float all windows (free placement, no auto-tiling).
 -- Super+LMB drag = move, Super+RMB drag = resize,
 -- Super+Alt+Space = toggle one window back to tiled.
--- Delete this rule to restore tiling.
+-- Delete this rule to restore tiling (the default).
 hl.window_rule({ match = { class = ".*" }, float = true })
 EOF
     fi
