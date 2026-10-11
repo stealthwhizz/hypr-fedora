@@ -23,8 +23,8 @@ hypr/
 │   ├── env.lua                 # unchanged (upstream already sets XDG_CURRENT_DESKTOP/etc via hl.env correctly)
 │   ├── execs.lua                # ADAPTED — see Notable fixes below
 │   ├── general.lua, input.lua, misc.lua, animations.lua, decoration.lua, group.lua, gestures.lua, rules.lua   # unchanged
-│   ├── keybinds.lua             # ADAPTED: Alt+Tab = last-used window + raise to top; Alt+Shift+Tab = cycle every window + raise (upstream's plain cycle_next left floating windows buried). See "Window management" below
-│   └── scripts/keyring_init.sh  # ported from serpantinum/hypr/scripts/keyring_init.sh
+│   ├── keybinds.lua             # ADAPTED: Alt+Tab / Alt+Shift+Tab call scripts/alttab.sh (MRU walk across workspaces + raise). See "Window management" below
+│   └── scripts/                 # keyring_init.sh (ported from serpantinum/hypr/scripts/), alttab.sh (added: MRU window switcher)
 └── utils/                      # helper Lua required by hyprland/*.lua, copied as-is
 
 caelestia-config/                # mirrors ~/.config/caelestia/ (separate from ~/.config/hypr/)
@@ -111,14 +111,14 @@ Windows **tile by default** (dwindle). Free placement is on demand:
 | Toggle one window tiled ⇄ floating (free placement) | `Super+Alt+Space` |
 | Center a floating window | `Ctrl+Super+\` |
 | Move / focus in a direction | `Super+Shift+←↑→↓` / `Super+←↑→↓` |
-| Alt+Tab: last-used window, raised to top (press again to go back) | `Alt+Tab` |
-| Step through every window on the workspace, raised to top | `Alt+Shift+Tab` |
+| Alt+Tab: walk windows most-recently-used first, across all workspaces; each press within ~1.5s goes one deeper; target is raised | `Alt+Tab` |
+| Same walk backwards (first press = least recently used) | `Alt+Shift+Tab` |
 | Cycle tabs inside a group | `Ctrl+Alt+Tab` |
 | Minimize the focused window | `Super+H` |
 | Show/hide minimized windows | `Super+Shift+H` |
 | Un-minimize (window focused in the shown minimized view) | `Ctrl+Super+Shift+Down` |
 
-`keybinds.lua` is ADAPTED for Alt+Tab: upstream's plain `cycle_next` focused the next window but never raised it, so floating windows stayed buried under the one you switched away from. The binds now follow the focus change with `alter_zorder({ mode = "top" })`.
+Alt+Tab is REPLACED from upstream: `cycle_next` follows window-list order and never raised the window, and Hyprland's `focus({ last })` only toggles between the two latest windows. `scripts/alttab.sh` snapshots the most-recently-used order on the first press and steps through it while presses are under 1.5s apart (`TIMEOUT_MS` in the script; there's no Alt-release detection, so the walk ends by timeout). Windows on special workspaces (including `special:minimized`) are skipped. Side effect: windows skipped over during a walk still get bumped in recency. Verified live with 3 windows via the script; the key presses themselves weren't tested.
 
 Minimize is ADDED (upstream has none; Hyprland has no native minimize): `Super+H` sends the window to a hidden special workspace, `special:minimized`, without following it. Keys are `kbMinimizeWindow` / `kbShowMinimized` in `variables.lua`. Verified live via dispatchers (minimize -> `special:minimized`, restore -> workspace 1); the key presses themselves weren't tested.
 

@@ -110,18 +110,11 @@ create_bind(vars.kbMoveWinToWsPrev, hl.dsp.window.move({ workspace = "-1" }), re
 create_bind(vars.kbMoveWinToWsSpecial, hl.dsp.window.move({ workspace = "special:special" }))
 create_bind(vars.kbMoveWinFromWsSpecial, hl.dsp.window.move({ workspace = "e+0" }))
 
--- Window switching (ADAPTED from upstream: raise the focused window so floating
--- windows don't stay buried under the one you just switched away from).
-local function focus_and_raise(focus)
-    return function()
-        hl.dispatch(focus)
-        hl.dispatch(hl.dsp.window.alter_zorder({ mode = "top" }))
-    end
-end
--- Alt+Tab: jump to the most recently used window (press again to go back).
-create_bind(vars.kbWindowCycleNext, focus_and_raise(hl.dsp.focus({ last = true })))
--- Alt+Shift+Tab: step through every window on the workspace (reaches 3rd+ windows).
-create_bind(vars.kbWindowCyclePrev, focus_and_raise(hl.dsp.window.cycle_next()), repeating)
+-- Window switching (REPLACED from upstream, which used cycle_next: window-list order, never raised
+-- the window). scripts/alttab.sh walks the most-recently-used list across all normal workspaces and
+-- raises the target; repeated presses within ~1.5s go deeper (Alt+Tab / Alt+Shift+Tab).
+create_bind(vars.kbWindowCycleNext, hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/alttab.sh next"))
+create_bind(vars.kbWindowCyclePrev, hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/alttab.sh prev"))
 
 -- Window groups
 create_bind(vars.kbWindowGroupCycleNext, hl.dsp.group.next(), repeating)
