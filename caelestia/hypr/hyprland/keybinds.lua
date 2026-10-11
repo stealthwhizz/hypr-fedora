@@ -166,6 +166,11 @@ create_bind(vars.kbWindowBorderedFullscreen, hl.dsp.window.fullscreen({ mode = "
 create_bind(vars.kbToggleWindowFloating, hl.dsp.window.float())
 create_bind(vars.kbCloseWindow, hl.dsp.window.close())
 
+-- Minimize (ADDED, not upstream): park the focused window on special:minimized without following it.
+-- Super+Shift+H shows/hides that workspace; to un-minimize, focus the window there and press kbMoveWinFromWsSpecial (Ctrl+Super+Shift+Down).
+create_bind(vars.kbMinimizeWindow, hl.dsp.window.move({ workspace = "special:minimized", follow = false }))
+create_bind(vars.kbShowMinimized, hl.dsp.workspace.toggle_special("minimized"))
+
 -- Special workspace toggles
 create_bind(vars.kbSpecialWs, fn.toggle("specialws"))
 create_bind(vars.kbSystemMonitorWs, fn.toggle("sysmon"))

@@ -114,8 +114,13 @@ Windows **tile by default** (dwindle). Free placement is on demand:
 | Alt+Tab: last-used window, raised to top (press again to go back) | `Alt+Tab` |
 | Step through every window on the workspace, raised to top | `Alt+Shift+Tab` |
 | Cycle tabs inside a group | `Ctrl+Alt+Tab` |
+| Minimize the focused window | `Super+H` |
+| Show/hide minimized windows | `Super+Shift+H` |
+| Un-minimize (window focused in the shown minimized view) | `Ctrl+Super+Shift+Down` |
 
 `keybinds.lua` is ADAPTED for Alt+Tab: upstream's plain `cycle_next` focused the next window but never raised it, so floating windows stayed buried under the one you switched away from. The binds now follow the focus change with `alter_zorder({ mode = "top" })`.
+
+Minimize is ADDED (upstream has none; Hyprland has no native minimize): `Super+H` sends the window to a hidden special workspace, `special:minimized`, without following it. Keys are `kbMinimizeWindow` / `kbShowMinimized` in `variables.lua`. Verified live via dispatchers (minimize -> `special:minimized`, restore -> workspace 1); the key presses themselves weren't tested.
 
 `bootstrap.sh --float-all` flips the default to floating every window (adds a window rule to `~/.config/caelestia/hypr-user.lua`).
 

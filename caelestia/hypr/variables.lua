@@ -118,6 +118,9 @@ return {
     kbWindowBorderedFullscreen = "SUPER + ALT + F",
     kbToggleWindowFloating     = "SUPER + ALT + Space",
     kbCloseWindow              = "SUPER + Q",
+    -- Hyprland has no native minimize: "minimize" = send the window to a hidden special workspace.
+    kbMinimizeWindow           = "SUPER + H",
+    kbShowMinimized            = "SUPER + SHIFT + H",
 
     -- Special workspaces toggles
     kbSpecialWs                = "SUPER + S",
