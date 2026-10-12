@@ -124,6 +124,19 @@ Minimize is ADDED (upstream has none; Hyprland has no native minimize): `Super+H
 
 `bootstrap.sh --float-all` flips the default to floating every window (adds a window rule to `~/.config/caelestia/hypr-user.lua`).
 
+## Screenshots and clipboard
+
+| Action | Keys |
+|---|---|
+| Full screen: saved + copied to clipboard (upstream behaviour) | `Print` |
+| Region: saved to `~/Pictures/Screenshots` AND copied to clipboard (ADDED, `scripts/screenshot-region.sh`; replaces upstream's swappy-only flow on this key) | `Super+Shift+S` |
+| Region with caelestia's picker, opens swappy for editing (does not auto-copy) | `Super+Shift+Alt+S` |
+| Clipboard history (text and images, via cliphist + fuzzel) | `Super+V` |
+| Delete an entry from clipboard history | `Super+Alt+V` |
+
+Everything copied, screenshots included, lands in the `Super+V` history (`wl-paste --watch cliphist store`, started in `execs.lua`). The region script uses plain `slurp`, so no freeze-frame or window snapping. Verified live: the grim -> `wl-copy` -> cliphist chain, and that `Super+V`'s `caelestia clipboard` opens fuzzel; the `slurp` selection and the key presses themselves weren't tested.
+
+
 ## Known limitations
 
 - **KDE System Settings' "Global Theme" (Look and Feel) page rewrites `kdeglobals` wholesale, wiping the `[Icons]` `Theme=breeze-full` key the icon fix above depends on.** Confirmed live: `systemsettings` logged a `kcm_lookandfeel` QML error at the exact moment the icons broke again mid-session, and `[Icons]` was gone from `kdeglobals` entirely afterward. `execs.lua` reapplies the fix on every Hyprland start, so a fresh login always recovers, but it does **not** self-heal mid-session if you open that specific settings page — the launcher's icons will go back to the broken-icon placeholder until you either avoid that page or manually re-run `kwriteconfig6 --file kdeglobals --group Icons --key Theme breeze-full` and restart the shell (`Ctrl+Super+Alt+R`).

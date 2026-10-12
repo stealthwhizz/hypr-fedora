@@ -180,7 +180,9 @@ create_bind(vars.kbAudioSettings, hl.dsp.exec_cmd(vars.audioSettings))
 
 -- Utilities
 create_bind(vars.kbScreenshot, hl.dsp.exec_cmd("caelestia screenshot"), locked)
-create_bind(vars.kbScreenshotFreeze, hl.dsp.global("caelestia:screenshotFreeze"))
+-- ADAPTED: Super+Shift+S = region -> saved to ~/Pictures/Screenshots AND copied to the clipboard
+-- (upstream opened swappy, which copies nothing). Caelestia's freeze/swappy picker stays on kbScreenshotRegion.
+create_bind(vars.kbScreenshotFreeze, hl.dsp.exec_cmd("bash ~/.config/hypr/scripts/screenshot-region.sh"))
 create_bind(vars.kbScreenshotRegion, hl.dsp.global("caelestia:screenshot"))
 create_bind(vars.kbRecord, hl.dsp.exec_cmd("caelestia record"))
 create_bind(vars.kbRecordSound, hl.dsp.exec_cmd("caelestia record -s"))
