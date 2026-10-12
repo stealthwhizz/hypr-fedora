@@ -164,6 +164,7 @@ return {
 
     -- Clipboard and emoji picker
     kbClipboard                = "SUPER + V",
+    kbClipboardPin             = "SUPER + SHIFT + V", -- ADDED: pin/unpin a clipboard entry (pins survive "Clear all")
     kbClipboardDel             = "SUPER + ALT + V",
     kbClipboardPasteLatest     = "CTRL + SHIFT + ALT + V",
     kbEmoji                    = "SUPER + Period",

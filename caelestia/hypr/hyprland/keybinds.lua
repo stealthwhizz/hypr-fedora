@@ -222,8 +222,10 @@ create_bind(
 create_bind(vars.kbSleep, hl.dsp.exec_cmd(vars.sleepGestureCmd), locked)
 
 -- Clipboard and emoji picker
--- ADAPTED: Super+V opens scripts/clipboard-menu.sh (cliphist picker + a "Clear all" entry) instead of `caelestia clipboard`.
+-- ADAPTED: Super+V opens scripts/clipboard-menu.sh (pinned entries + cliphist history + "Pin/unpin" and
+-- "Clear all" entries) instead of `caelestia clipboard`. Super+Shift+V jumps straight to the pin/unpin picker.
 create_bind(vars.kbClipboard, hl.dsp.exec_cmd("pkill fuzzel || bash ~/.config/hypr/scripts/clipboard-menu.sh"))
+create_bind(vars.kbClipboardPin, hl.dsp.exec_cmd("pkill fuzzel || bash ~/.config/hypr/scripts/clipboard-menu.sh pin"))
 create_bind(vars.kbClipboardDel, hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard -d"))
 create_bind(vars.kbEmoji, hl.dsp.exec_cmd("pkill fuzzel || caelestia emoji -p"))
 create_bind(

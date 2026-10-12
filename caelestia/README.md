@@ -131,10 +131,11 @@ Minimize is ADDED (upstream has none; Hyprland has no native minimize): `Super+H
 | Full screen: saved + copied to clipboard (upstream behaviour) | `Print` |
 | Region: saved to `~/Pictures/Screenshots` AND copied to clipboard (ADDED, `scripts/screenshot-region.sh`; replaces upstream's swappy-only flow on this key) | `Super+Shift+S` |
 | Region with caelestia's picker, opens swappy for editing (does not auto-copy) | `Super+Shift+Alt+S` |
-| Clipboard history (text and images, via cliphist + fuzzel). The LAST entry, "🗑 Clear all clipboard history", wipes the history and the live clipboard (ADDED, `scripts/clipboard-menu.sh`; type `clear` to jump to it) | `Super+V` |
+| Clipboard picker (text and images, cliphist + fuzzel): pinned entries (📌) first, then history; last two entries are "📌 Pin / unpin an entry…" and "🗑 Clear all clipboard history" (type `pin` / `clear` to jump). ADDED, `scripts/clipboard-menu.sh` | `Super+V` |
+| Pin or unpin an entry: pick a history entry to pin it, or a 📌 entry to unpin it. **Pins survive "Clear all"** | `Super+Shift+V` |
 | Delete a single entry from clipboard history | `Super+Alt+V` |
 
-Everything copied, screenshots included, lands in the `Super+V` history (`wl-paste --watch cliphist store`, started in `execs.lua`). The Clear-all entry is deliberately the last line, so pressing Enter right after opening can't wipe anything. The region script uses plain `slurp`, so no freeze-frame or window snapping. Verified live: the grim -> `wl-copy` -> cliphist chain; the clipboard-menu logic (select / cancel / clear-all) with a stubbed fuzzel on a throwaway database. The real fuzzel window, `slurp` selection and key presses weren't tested.
+Everything copied, screenshots included, lands in the `Super+V` history (`wl-paste --watch cliphist store`, started in `execs.lua`). Pins are raw files in `~/.local/share/clipboard-pins/` (dir mode 700), completely outside cliphist's database, so `cliphist wipe` can't touch them; only unpinning deletes one. They are stored unencrypted, like cliphist's own database, so don't pin passwords. The action entries are deliberately the last lines, so pressing Enter right after opening can't wipe or change anything. The region script uses plain `slurp`, so no freeze-frame or window snapping. Verified live: the grim -> `wl-copy` -> cliphist chain; the clipboard-menu logic (select / cancel / pin text and image / clear-all keeps pins / copy a pin back / unpin / menu-to-pin handoff) with a stubbed fuzzel on a throwaway database. The real fuzzel window, `slurp` selection and key presses weren't tested.
 
 
 ## Known limitations
