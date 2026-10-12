@@ -224,6 +224,12 @@ create_bind(vars.kbSleep, hl.dsp.exec_cmd(vars.sleepGestureCmd), locked)
 -- Clipboard and emoji picker
 create_bind(vars.kbClipboard, hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard"))
 create_bind(vars.kbClipboardDel, hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard -d"))
+-- ADDED: wipe the whole history (cliphist), then clear the live clipboard. History first, so the
+-- watcher can't re-store the content that's still in the live clipboard.
+create_bind(
+    vars.kbClipboardWipe,
+    hl.dsp.exec_cmd("cliphist wipe && wl-copy --clear && notify-send -a clipboard -u low 'Clipboard cleared' 'History and current clipboard wiped'")
+)
 create_bind(vars.kbEmoji, hl.dsp.exec_cmd("pkill fuzzel || caelestia emoji -p"))
 create_bind(
     vars.kbClipboardPasteLatest,

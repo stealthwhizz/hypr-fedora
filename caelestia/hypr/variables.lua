@@ -166,5 +166,6 @@ return {
     kbClipboard                = "SUPER + V",
     kbClipboardDel             = "SUPER + ALT + V",
     kbClipboardPasteLatest     = "CTRL + SHIFT + ALT + V",
+    kbClipboardWipe            = "CTRL + SUPER + V", -- ADDED: clear ALL clipboard history + the live clipboard
     kbEmoji                    = "SUPER + Period",
 }

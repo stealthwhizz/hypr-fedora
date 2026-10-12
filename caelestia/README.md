@@ -133,6 +133,7 @@ Minimize is ADDED (upstream has none; Hyprland has no native minimize): `Super+H
 | Region with caelestia's picker, opens swappy for editing (does not auto-copy) | `Super+Shift+Alt+S` |
 | Clipboard history (text and images, via cliphist + fuzzel) | `Super+V` |
 | Delete an entry from clipboard history | `Super+Alt+V` |
+| Clear EVERYTHING: whole history + live clipboard, no confirmation (ADDED; `cliphist wipe && wl-copy --clear`) | `Ctrl+Super+V` |
 
 Everything copied, screenshots included, lands in the `Super+V` history (`wl-paste --watch cliphist store`, started in `execs.lua`). The region script uses plain `slurp`, so no freeze-frame or window snapping. Verified live: the grim -> `wl-copy` -> cliphist chain, and that `Super+V`'s `caelestia clipboard` opens fuzzel; the `slurp` selection and the key presses themselves weren't tested.
 
