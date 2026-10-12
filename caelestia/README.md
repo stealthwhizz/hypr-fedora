@@ -131,11 +131,10 @@ Minimize is ADDED (upstream has none; Hyprland has no native minimize): `Super+H
 | Full screen: saved + copied to clipboard (upstream behaviour) | `Print` |
 | Region: saved to `~/Pictures/Screenshots` AND copied to clipboard (ADDED, `scripts/screenshot-region.sh`; replaces upstream's swappy-only flow on this key) | `Super+Shift+S` |
 | Region with caelestia's picker, opens swappy for editing (does not auto-copy) | `Super+Shift+Alt+S` |
-| Clipboard history (text and images, via cliphist + fuzzel) | `Super+V` |
-| Delete an entry from clipboard history | `Super+Alt+V` |
-| Clear EVERYTHING: whole history + live clipboard, no confirmation (ADDED; `cliphist wipe && wl-copy --clear`) | `Ctrl+Super+V` |
+| Clipboard history (text and images, via cliphist + fuzzel). The LAST entry, "🗑 Clear all clipboard history", wipes the history and the live clipboard (ADDED, `scripts/clipboard-menu.sh`; type `clear` to jump to it) | `Super+V` |
+| Delete a single entry from clipboard history | `Super+Alt+V` |
 
-Everything copied, screenshots included, lands in the `Super+V` history (`wl-paste --watch cliphist store`, started in `execs.lua`). The region script uses plain `slurp`, so no freeze-frame or window snapping. Verified live: the grim -> `wl-copy` -> cliphist chain, and that `Super+V`'s `caelestia clipboard` opens fuzzel; the `slurp` selection and the key presses themselves weren't tested.
+Everything copied, screenshots included, lands in the `Super+V` history (`wl-paste --watch cliphist store`, started in `execs.lua`). The Clear-all entry is deliberately the last line, so pressing Enter right after opening can't wipe anything. The region script uses plain `slurp`, so no freeze-frame or window snapping. Verified live: the grim -> `wl-copy` -> cliphist chain; the clipboard-menu logic (select / cancel / clear-all) with a stubbed fuzzel on a throwaway database. The real fuzzel window, `slurp` selection and key presses weren't tested.
 
 
 ## Known limitations
