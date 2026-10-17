@@ -122,6 +122,8 @@ Alt+Tab is REPLACED from upstream: `cycle_next` follows window-list order and ne
 
 Minimize is ADDED (upstream has none; Hyprland has no native minimize): `Super+H` sends the window to a hidden special workspace, `special:minimized`, without following it. Keys are `kbMinimizeWindow` / `kbShowMinimized` in `variables.lua`. Verified live via dispatchers (minimize -> `special:minimized`, restore -> workspace 1); the key presses themselves weren't tested.
 
+Codex desktop pet overlay: the ChatGPT/Codex app draws its pet in a separate transparent floating XWayland window (about 1138x2129, taller than a 1080p screen). Under the global blur, shadow, rounding, border and forced-opacity rules it showed as a dark frosted rectangle over the Codex window, and a blurred window that large is expensive to composite. `caelestia-config/hypr-user.lua` (seeded to `~/.config/caelestia/`) has a `codex-pet-overlay` rule matching class `Chatgpt` + floating: no blur/shadow/animation/focus, no border or rounding, opacity 1, pinned, tagged `codex_pet`; `scripts/alttab.sh` skips windows with that tag. Verified live: tag applies, config loads cleanly, and the dark rectangle is gone in a screenshot. Not verified: that `pin` takes effect (it only applies when the window opens), that the mouse lag is fixed, or behaviour after a Codex restart. The rule also hits any floating Codex main window.
+
 `bootstrap.sh --float-all` flips the default to floating every window (adds a window rule to `~/.config/caelestia/hypr-user.lua`).
 
 ## Screenshots and clipboard

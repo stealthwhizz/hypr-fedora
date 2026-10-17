@@ -35,7 +35,7 @@ fi
 # fresh walk: snapshot MRU order (focusHistoryID 0 = currently focused)
 if [ "${#addrs[@]}" -eq 0 ]; then
     mapfile -t addrs < <(hyprctl clients -j | jq -r \
-        '[.[] | select(.mapped and (.hidden | not) and .workspace.id >= 0)]
+        '[.[] | select(.mapped and (.hidden | not) and .workspace.id >= 0 and ((.tags | map(startswith("codex_pet")) | any) | not))]
          | sort_by(.focusHistoryID) | .[].address')
     idx=0
 fi
